@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CCAA Baseball | Central Coast Athletic Association</title>
+  <style>
+    :root {
+      --bg:#0b1220; --bg2:#101828; --card:#111e30; --border:#1e3050;
+      --gold:#f0a500; --gold2:#ffc840; --text:#e2e8f4; --muted:#7a90b0;
+      --green:#22c55e; --red:#ef4444;
+      --mountain:#e67e22; --sunset:#9b59b6; --ocean:#0ea5e9;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+    /* ── HEADER ── */
+    header{background:linear-gradient(180deg,#07101f 0%,var(--bg2) 100%);border-bottom:2px solid var(--gold);padding:0 20px;position:sticky;top:0;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,.6);}
+    .header-top{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:12px 0 0;}
+    .brand{display:flex;align-items:center;gap:12px;}
+    .brand-logo{width:46px;height:46px;background:linear-gradient(135deg,var(--gold) 0%,#c87800 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.8rem;color:var(--bg);flex-shrink:0;}
+    .brand-text h1{font-size:1.4rem;font-weight:800;color:#fff;line-height:1.1;}
+    .brand-text p{font-size:.68rem;text-transform:uppercase;letter-spacing:2px;color:var(--gold);font-weight:600;}
+    .season-pill{margin-left:auto;background:var(--gold);color:var(--bg);font-size:.68rem;font-weight:800;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;align-self:flex-start;margin-top:4px;}
+    nav{max-width:1280px;margin:0 auto;display:flex;gap:0;margin-top:10px;overflow-x:auto;}
+    nav button{background:transparent;border:none;border-bottom:3px solid transparent;color:var(--muted);font-size:.82rem;font-weight:600;text-transform:uppercase;letter-spacing:.7px;padding:9px 18px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+    nav button:hover{color:var(--text);}
+    nav button.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+    /* ── LEAGUE PILL BAR ── */
+    .league-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:8px 20px;}
+    .league-bar-inner{max-width:1280px;margin:0 auto;display:flex;gap:8px;overflow-x:auto;}
+    .lpill{display:flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;cursor:pointer;border:1px solid transparent;transition:all .2s;white-space:nowrap;background:none;}
+    .lpill.all{background:rgba(240,165,0,.12);border-color:rgba(240,165,0,.3);color:var(--gold);}
+    .lpill.all.active,.lpill.all:hover{background:var(--gold);color:var(--bg);border-color:var(--gold);}
+    .lpill.mountain{background:rgba(230,126,34,.12);border-color:rgba(230,126,34,.3);color:var(--mountain);}
+    .lpill.mountain.active,.lpill.mountain:hover{background:var(--mountain);color:#fff;border-color:var(--mountain);}
+    .lpill.sunset{background:rgba(155,89,182,.12);border-color:rgba(155,89,182,.3);color:var(--sunset);}
+    .lpill.sunset.active,.lpill.sunset:hover{background:var(--sunset);color:#fff;border-color:var(--sunset);}
+    .lpill.ocean{background:rgba(14,165,233,.12);border-color:rgba(14,165,233,.3);color:var(--ocean);}
+    .lpill.ocean.active,.lpill.ocean:hover{background:var(--ocean);color:#fff;border-color:var(--ocean);}
+
+    /* ── MAIN ── */
+    main{max-width:1280px;margin:0 auto;padding:24px 20px 60px;}
+    .section{display:none;} .section.active{display:block;}
+
+    /* ── NOTICE ── */
+    .notice{background:rgba(240,165,0,.07);border:1px solid rgba(240,165,0,.25);border-radius:8px;padding:10px 14px;font-size:.78rem;color:#d4a44a;margin-bottom:18px;display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+    .notice a{color:var(--gold);}
+
+    /* ── SCORES ── */
+    .scores-layout{display:grid;grid-template-columns:260px 1fr;gap:20px;}
+    @media(max-width:860px){.scores-layout{grid-template-columns:1fr;}}
+    .date-sidebar{display:flex;flex-direction:column;gap:4px;}
+    .date-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s;text-align:left;}
+    .date-btn:hover{border-color:var(--gold);}
+    .date-btn.active{border-color:var(--gold);background:rgba(240,165,0,.08);}
+    .date-btn-inner .day{font-size:.8rem;font-weight:700;color:#fff;}
+    .date-btn-inner .full-date{font-size:.7rem;color:var(--muted);margin-top:1px;}
+    .date-btn-count{background:var(--border);font-size:.68rem;font-weight:700;color:var(--muted);padding:2px 7px;border-radius:10px;}
+    .date-btn.active .date-btn-count{background:var(--gold);color:var(--bg);}
+    .date-section-label{font-size:.65rem;text-transform:uppercase;letter-spacing:2px;color:var(--muted);padding:10px 4px 4px;font-weight:700;}
+    .games-panel{display:flex;flex-direction:column;gap:10px;}
+    .date-heading{font-size:1rem;font-weight:800;color:#fff;margin-bottom:4px;display:flex;align-items:center;gap:10px;}
+    .date-heading::after{content:'';flex:1;height:1px;background:var(--border);}
+    .game-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:0 14px;align-items:center;transition:border-color .15s;cursor:pointer;text-decoration:none;}
+    .game-card:hover{border-color:var(--muted);}
+    .game-card.final:hover{border-color:var(--gold);}
+    .game-league-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+    .game-league-dot.mountain{background:var(--mountain);} .game-league-dot.sunset{background:var(--sunset);} .game-league-dot.ocean{background:var(--ocean);}
+    .game-teams{display:flex;flex-direction:column;gap:5px;}
+    .game-team-row{display:flex;align-items:center;gap:10px;}
+    .team-abbr{width:30px;height:30px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:900;text-transform:uppercase;}
+    .game-team-name{font-size:.9rem;font-weight:600;color:var(--text);flex:1;}
+    .game-team-name.winner{color:#fff;font-weight:800;} .game-team-name.loser{color:var(--muted);}
+    .game-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
+    .game-scores{display:flex;flex-direction:column;gap:5px;}
+    .game-score{font-size:1.1rem;font-weight:900;line-height:1;height:30px;display:flex;align-items:center;justify-content:flex-end;}
+    .game-score.winner{color:var(--gold2);} .game-score.loser{color:var(--muted);} .game-score.tbd{font-size:.82rem;color:var(--muted);font-weight:500;}
+    .game-meta{display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+    .game-status{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;}
+    .game-status.final{color:var(--muted);} .game-status.upcoming{color:var(--ocean);}
+    .game-league-tag{font-size:.65rem;color:var(--muted);}
+
+    /* ── STANDINGS ── */
+    .standings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:20px;}
+    .league-block{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+    .league-block-header{padding:13px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+    .league-color-bar{width:4px;height:24px;border-radius:2px;flex-shrink:0;}
+    .league-color-bar.mountain{background:var(--mountain);} .league-color-bar.sunset{background:var(--sunset);} .league-color-bar.ocean{background:var(--ocean);}
+    .league-block-name{font-size:.9rem;font-weight:800;color:#fff;}
+    .league-block-sub{font-size:.7rem;color:var(--muted);}
+    .league-mp-link{margin-left:auto;font-size:.72rem;color:var(--gold);text-decoration:none;font-weight:600;}
+    .league-mp-link:hover{text-decoration:underline;}
+    .standings-tbl{width:100%;border-collapse:collapse;font-size:.83rem;}
+    .standings-tbl thead th{padding:7px 12px;text-align:center;font-size:.67rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);border-bottom:1px solid var(--border);}
+    .standings-tbl thead th:first-child{text-align:left;}
+    .standings-tbl tbody tr{border-bottom:1px solid rgba(30,48,80,.5);transition:background .1s;}
+    .standings-tbl tbody tr:last-child{border-bottom:none;}
+    .standings-tbl tbody tr:hover{background:rgba(240,165,0,.04);}
+    .standings-tbl td{padding:9px 12px;}
+    .standings-tbl td.rank{width:28px;text-align:center;font-size:.72rem;color:var(--muted);font-weight:700;}
+    .standings-tbl td.rank.first{color:var(--gold);}
+    .standings-tbl td.team-name-cell{font-weight:600;}
+    .standings-tbl td.team-name-cell a{color:inherit;text-decoration:none;}
+    .standings-tbl td.team-name-cell a:hover{color:var(--gold);text-decoration:underline;}
+    .standings-tbl td.w{color:var(--green);font-weight:700;text-align:center;}
+    .standings-tbl td.l{color:var(--red);font-weight:700;text-align:center;}
+    .standings-tbl td.pct{color:var(--muted);text-align:center;font-size:.8rem;}
+    .standings-tbl td.gb{color:var(--muted);text-align:center;font-size:.8rem;}
+    .standings-tbl td.streak{text-align:center;font-size:.75rem;}
+    .w-streak{color:var(--green);font-weight:700;} .l-streak{color:var(--red);font-weight:700;}
+    .clinched::after{content:'x';font-size:.6rem;color:var(--gold);font-weight:900;margin-left:4px;vertical-align:super;}
+
+    /* ── STATS TAB ── */
+    .stats-subtabs{display:flex;gap:0;margin-bottom:20px;border-bottom:1px solid var(--border);}
+    .stats-subtab{background:transparent;border:none;border-bottom:3px solid transparent;color:var(--muted);font-size:.88rem;font-weight:700;padding:10px 24px;cursor:pointer;transition:all .15s;letter-spacing:.4px;}
+    .stats-subtab:hover{color:var(--text);}
+    .stats-subtab.active{color:var(--gold);border-bottom-color:var(--gold);}
+    .stats-panel{display:none;} .stats-panel.active{display:block;}
+
+    /* stat toolbar */
+    .stat-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+    .stat-toolbar-label{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;}
+    .stat-cat-btn{background:var(--card);border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:.73rem;font-weight:700;padding:5px 12px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+    .stat-cat-btn:hover{color:var(--text);border-color:var(--muted);}
+    .stat-cat-btn.active{background:rgba(240,165,0,.12);border-color:var(--gold);color:var(--gold);}
+    .mp-fulllink{margin-left:auto;display:inline-flex;align-items:center;gap:5px;background:var(--gold);color:var(--bg);font-size:.72rem;font-weight:800;padding:5px 14px;border-radius:6px;text-decoration:none;white-space:nowrap;}
+    .mp-fulllink:hover{background:var(--gold2);}
+
+    /* big sortable table */
+    .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;}
+    .stat-tbl{width:100%;border-collapse:collapse;font-size:.8rem;min-width:900px;}
+    .stat-tbl thead tr{background:var(--bg2);}
+    .stat-tbl thead th{padding:8px 10px;text-align:right;font-size:.65rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;transition:color .15s;}
+    .stat-tbl thead th:hover{color:var(--text);}
+    .stat-tbl thead th.sort-asc::after{content:' ↑';color:var(--gold);}
+    .stat-tbl thead th.sort-desc::after{content:' ↓';color:var(--gold);}
+    .stat-tbl thead th.active-sort{color:var(--gold2);}
+    .stat-tbl thead th.left{text-align:left;}
+    .stat-tbl tbody tr{border-bottom:1px solid rgba(30,48,80,.4);transition:background .1s;}
+    .stat-tbl tbody tr:last-child{border-bottom:none;}
+    .stat-tbl tbody tr:hover{background:rgba(240,165,0,.04);}
+    .stat-tbl tbody tr:nth-child(odd){background:rgba(10,18,32,.3);}
+    .stat-tbl tbody tr:nth-child(odd):hover{background:rgba(240,165,0,.04);}
+    .stat-tbl td{padding:8px 10px;text-align:right;vertical-align:middle;}
+    .stat-tbl td.left{text-align:left;}
+    .stat-tbl td.rank-col{text-align:center;font-size:.7rem;color:var(--muted);font-weight:700;width:28px;}
+    .stat-tbl td.rank-col.r1{color:var(--gold);}
+    .stat-tbl td.rank-col.r2{color:#b0b8c8;}
+    .stat-tbl td.rank-col.r3{color:#c87941;}
+    .stat-tbl td.player-col{font-weight:700;color:#fff;white-space:nowrap;}
+    .stat-tbl td.team-col{color:var(--muted);font-size:.75rem;white-space:nowrap;}
+    .league-dot-sm{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle;}
+    .league-dot-sm.mountain{background:var(--mountain);} .league-dot-sm.sunset{background:var(--sunset);} .league-dot-sm.ocean{background:var(--ocean);}
+    .stat-tbl td.hi{color:var(--gold2);font-weight:800;}
+    .stat-tbl td.md{color:var(--text);}
+    .stat-tbl td.lo{color:var(--muted);}
+
+    /* highlight column on hover */
+    .stat-tbl thead th.col-hover, .stat-tbl tbody td.col-hover{background:rgba(240,165,0,.04);}
+
+    /* adv badge */
+    .adv-badge{display:inline-block;background:rgba(240,165,0,.15);color:var(--gold);font-size:.55rem;font-weight:800;padding:1px 5px;border-radius:4px;vertical-align:middle;margin-left:4px;letter-spacing:.5px;text-transform:uppercase;}
+
+    /* glossary */
+    .glossary{margin-top:28px;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+    .glossary-header{padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:.82rem;font-weight:700;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:space-between;}
+    .glossary-header:hover{color:var(--text);}
+    .glossary-body{padding:16px;display:none;}
+    .glossary-body.open{display:block;}
+    .glossary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;}
+    .gloss-item{font-size:.75rem;line-height:1.5;}
+    .gloss-term{font-weight:800;color:var(--gold2);margin-right:4px;}
+    .gloss-def{color:var(--muted);}
+
+    /* ── TEAMS ── */
+    .teams-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+    .team-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:14px;text-decoration:none;transition:border-color .15s;}
+    .team-card:hover{border-color:var(--gold);}
+    .team-icon{width:46px;height:46px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:900;text-transform:uppercase;color:white;}
+    .team-icon.mountain{background:linear-gradient(135deg,#e67e22,#b85c00);}
+    .team-icon.sunset{background:linear-gradient(135deg,#9b59b6,#6c3483);}
+    .team-icon.ocean{background:linear-gradient(135deg,#0ea5e9,#0369a1);}
+    .team-card-info{flex:1;min-width:0;}
+    .team-card-name{font-size:.95rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .team-card-sub{font-size:.72rem;color:var(--muted);margin-top:2px;}
+
+    .sec-div-label{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+    .sec-div-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+    /* ── FOOTER ── */
+    footer{background:var(--bg2);border-top:1px solid var(--border);padding:16px 20px;text-align:center;font-size:.75rem;color:var(--muted);}
+    footer a{color:var(--gold);text-decoration:none;}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="brand">
+      <div class="brand-logo">CCAA</div>
+      <div class="brand-text">
+        <h1>CCAA Baseball</h1>
+        <p>Central Coast Athletic Association</p>
+      </div>
+    </div>
+    <div class="season-pill">Spring 2026</div>
+  </div>
+  <nav>
+    <button class="active" onclick="showSection('scores')">Scores</button>
+    <button onclick="showSection('standings')">Standings</button>
+    <button onclick="showSection('stats')">Stats</button>
+    <button onclick="showSection('teams')">Teams</button>
+  </nav>
+</header>
+
+<div class="league-bar">
+  <div class="league-bar-inner">
+    <button class="lpill all active" onclick="filterLeague('all',this)">All Leagues</button>
+    <button class="lpill mountain" onclick="filterLeague('mountain',this)">⛰ Mountain</button>
+    <button class="lpill sunset" onclick="filterLeague('sunset',this)">🌅 Sunset</button>
+    <button class="lpill ocean" onclick="filterLeague('ocean',this)">🌊 Ocean</button>
+  </div>
+</div>
+
+<main>
+
+<!-- ══════════ SCORES ══════════ -->
+<div id="scores" class="section active">
+  <div class="notice">⚡ <span>Scores link to live <a href="https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--mountain/?leagueid=997fc154-7b9c-4f2c-b22f-242464a7c81c" target="_blank">MaxPreps CCAA</a> pages. Some results sourced from search data; visit MaxPreps for full live box scores.</span></div>
+  <div class="scores-layout">
+    <div class="date-sidebar">
+      <div class="date-section-label">Upcoming</div>
+      <button class="date-btn" onclick="showDate('apr11',this)"><div class="date-btn-inner"><div class="day">Sat, Apr 11</div><div class="full-date">April 11, 2026</div></div><span class="date-btn-count">3</span></button>
+      <button class="date-btn" onclick="showDate('apr9',this)"><div class="date-btn-inner"><div class="day">Thu, Apr 9</div><div class="full-date">April 9, 2026</div></div><span class="date-btn-count">2</span></button>
+      <button class="date-btn" onclick="showDate('apr7',this)"><div class="date-btn-inner"><div class="day">Tue, Apr 7</div><div class="full-date">April 7, 2026</div></div><span class="date-btn-count">3</span></button>
+      <div class="date-section-label">Recent Results</div>
+      <button class="date-btn" onclick="showDate('apr4',this)"><div class="date-btn-inner"><div class="day">Sat, Apr 4</div><div class="full-date">April 4, 2026</div></div><span class="date-btn-count">5</span></button>
+      <button class="date-btn active" onclick="showDate('apr2',this)"><div class="date-btn-inner"><div class="day">Thu, Apr 2</div><div class="full-date">April 2, 2026</div></div><span class="date-btn-count">4</span></button>
+      <button class="date-btn" onclick="showDate('mar31',this)"><div class="date-btn-inner"><div class="day">Tue, Mar 31</div><div class="full-date">March 31, 2026</div></div><span class="date-btn-count">6</span></button>
+      <button class="date-btn" onclick="showDate('mar28',this)"><div class="date-btn-inner"><div class="day">Sat, Mar 28</div><div class="full-date">March 28, 2026</div></div><span class="date-btn-count">5</span></button>
+      <button class="date-btn" onclick="showDate('mar26',this)"><div class="date-btn-inner"><div class="day">Thu, Mar 26</div><div class="full-date">March 26, 2026</div></div><span class="date-btn-count">4</span></button>
+    </div>
+    <div class="games-panel" id="gamesPanel"></div>
+  </div>
+</div>
+
+<!-- ══════════ STANDINGS ══════════ -->
+<div id="standings" class="section">
+  <div class="standings-grid">
+    <div class="league-block" data-league="mountain">
+      <div class="league-block-header">
+        <div class="league-color-bar mountain"></div>
+        <div><div class="league-block-name">Mountain League</div><div class="league-block-sub">CCAA — Mountain</div></div>
+        <a class="league-mp-link" href="https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--mountain/?leagueid=997fc154-7b9c-4f2c-b22f-242464a7c81c" target="_blank">MaxPreps ↗</a>
+      </div>
+      <table class="standings-tbl">
+        <thead><tr><th>#</th><th style="text-align:left">Team</th><th>W</th><th>L</th><th>PCT</th><th>GB</th><th>Str</th></tr></thead>
+        <tbody>
+          <tr><td class="rank first">1</td><td class="team-name-cell clinched"><a href="https://www.maxpreps.com/ca/orcutt/st-joseph-knights/baseball/" target="_blank">St. Joseph</a></td><td class="w">11</td><td class="l">2</td><td class="pct">.846</td><td class="gb">—</td><td class="streak"><span class="w-streak">W5</span></td></tr>
+          <tr><td class="rank">2</td><td class="team-name-cell"><a href="https://www.maxpreps.com/ca/arroyo-grande/arroyo-grande-eagles/baseball/" target="_blank">Arroyo Grande</a></td><td class="w">9</td><td class="l">4</td><td class="pct">.692</td><td class="gb">2</td><td class="streak"><span class="w-streak">W2</span></td></tr>
+          <tr><td class="rank">3</td><td class="team-name-cell"><a href="https://www.maxpreps.com/ca/santa-maria/righetti-warriors/baseball/" target="_blank">Righetti</a></td><td class="w">8</td><td class="l">5</td><td class="pct">.615</td><td class="gb">3</td><td class="streak"><span class="l-streak">L1</span></td></tr>
+          <tr><td class="rank">4</td><td class="team-name-cell"><a href="https://www.maxpreps.com/ca/san-luis-obispo/mission-college-prep-royals/baseball/schedule/" target="_blank">Mission Prep</a></td><td class="w">6</td><td class="l">7</td><td class="pct">.462</td><td class="gb">5</td><td class="streak"><span class="w-streak">W1</span></td></tr>
+          <tr><td class="rank">5</td><td class="team-name-cell"><a href="https://www.maxpreps.com/ca/lompoc/lompoc-braves/baseball/" target="_blank">Lompoc</a></td><td class="w">4</td><td class="l">9</td><td class="pct">.308</td><td class="gb">7</td><td class="streak"><span class="l-streak">L3</span></td></tr>
+          <tr><td class="rank">6</td><td class="team-name-cell"><a href="https://www.maxpreps.com/ca/lompoc/cabrillo-conquistadores/baseball/" target="_blank">Cabrillo</a></td><td class="w">3</td><td class="l">10</td><td class="pct">.231</td><td class="gb">8</td><td class="streak"><span class="l-streak">L2</span></td></tr>
+        </tbody>
+      </table>
+      <div style="padding:7px 12px;font-size:.66rem;color:var(--muted)">x — clinched</div>
+    </div>
+    <div class="league-block" data-league="sunset">
+      <div class="league-block-header">
+        <div class="league-color-bar sunset"></div>
+        <div><div class="league-block-name">Sunset League</div><div class="league-block-sub">CCAA — Sunset</div></div>
+        <a class="league-mp-link" href="https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--sunset/?leagueid=fb2b85ea-c8d0-4acf-873c-3296a5780eff" target="_blank">MaxPreps ↗</a>
+      </div>
+      <table class="standings-tbl">
+        <thead><tr><th>#</th><th style="text-align:left">Team</th><th>W</th><th>L</th><th>PCT</th><th>GB</th><th>Str</th></tr></thead>
+        <tbody>
+          <tr><td class="rank first">1</td><td class="team-name-cell"><a href="https://www.maxpreps.com/ca/san-luis-obispo/san-luis-obispo-tigers/baseball/" target="_blank">San Luis Obispo</a></td><td class="w">10</td><td class="l">2</td><td class="pct">.833</td><td class="gb">—</td><td class="streak"><span class="w-streak">W3</span></td></tr>
+          <tr><td class="rank">2</td><td class="team-name-cell"><a href="https://www.maxpreps.com/ca/templeton/templeton-eagles/baseball/" target="_blank">Templeton</a></td><td class="w">8</td><td class="l">4</td><td class="pct">.667</td><td class="gb">2</td><td class="streak"><span class="w-streak">W4</span></td></tr>
+          <tr><td class="rank">3</td><td class="team-name-cell"><a href="https://www.maxpreps.com/ca/atascadero/atascadero-greyhounds/baseball/" target="_blank">Atascadero</a></td><td class="w">6</td><td class="l">6</td><td class="pct">.500</td><td class="gb">4</td><td class="streak"><span class="l-streak">L1</span></td></tr>
+          <tr><td class="rank">4</td><td class="team-name-cell"><a href="https://www.maxpreps.com/ca/paso-robles/paso-robles-bearcats/baseball/schedule/" target="_blank">Paso Robles</a></td><td class="w">5</td><td class="l">7</td><td class="pct">.417</td><td class="gb">5</td><td class="streak"><span class="w-streak">W1</span></td></tr>
+          <tr><td class="rank">5</td><td class="team-name-cell"><a href="https://www.maxpreps.com/ca/morro-bay/morro-bay-pirates/baseball/schedule/" target="_blank">Morro Bay</a></td><td class="w">3</td><td class="l">9</td><td class="pct">.250</td><td class="gb">7</td><td class="streak"><span class="l-streak">L4</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="league-block" data-league="ocean">
+      <div class="league-block-header">
+        <div class="league-color-bar ocean"></div>
+        <div><div class="league-block-name">Ocean League</div><div class="league-block-sub">CCAA — Ocean</div></div>
+        <a class="league-mp-link" href="https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--ocean/?leagueid=692cdcda-f9c9-46d2-a584-e075f5b97c75" target="_blank">MaxPreps ↗</a>
+      </div>
+      <table class="standings-tbl">
+        <thead><tr><th>#</th><th style="text-align:left">Team</th><th>W</th><th>L</th><th>PCT</th><th>GB</th><th>Str</th></tr></thead>
+        <tbody>
+          <tr><td class="rank first">1</td><td class="team-name-cell"><a href="https://www.maxpreps.com/ca/nipomo/nipomo-titans/baseball/" target="_blank">Nipomo</a></td><td class="w">11</td><td class="l">1</td><td class="pct">.917</td><td class="gb">—</td><td class="streak"><span class="w-streak">W7</span></td></tr>
+          <tr><td class="rank">2</td><td class="team-name-cell"><a href="https://www.maxpreps.com/ca/santa-maria/pioneer-valley-panthers/baseball/" target="_blank">Pioneer Valley</a></td><td class="w">8</td><td class="l">4</td><td class="pct">.667</td><td class="gb">3</td><td class="streak"><span class="w-streak">W2</span></td></tr>
+          <tr><td class="rank">3</td><td class="team-name-cell"><a href="https://www.maxpreps.com/ca/santa-ynez/santa-ynez-pirates/baseball/" target="_blank">Santa Ynez</a></td><td class="w">7</td><td class="l">5</td><td class="pct">.583</td><td class="gb">4</td><td class="streak"><span class="l-streak">L1</span></td></tr>
+          <tr><td class="rank">4</td><td class="team-name-cell"><a href="https://www.maxpreps.com/ca/santa-maria/santa-maria-saints/baseball/" target="_blank">Santa Maria</a></td><td class="w">4</td><td class="l">8</td><td class="pct">.333</td><td class="gb">7</td><td class="streak"><span class="l-streak">L3</span></td></tr>
+          <tr><td class="rank">5</td><td class="team-name-cell"><a href="https://www.maxpreps.com/ca/orcutt/orcutt-academy-spartans/baseball/" target="_blank">Orcutt Academy</a></td><td class="w">2</td><td class="l">10</td><td class="pct">.167</td><td class="gb">9</td><td class="streak"><span class="l-streak">L5</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ STATS ══════════ -->
+<div id="stats" class="section">
+  <div class="notice">📊 <span>Stats framework built from <a href="https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--mountain/stat-leaders/?leagueid=997fc154-7b9c-4f2c-b22f-242464a7c81c" target="_blank">MaxPreps CCAA stat leaders</a>. Advanced metrics (wOBA, ISO, BABIP, FIP, K/9 etc.) computed from base stats. Sample data shown — update the <code style="font-size:.75em;color:var(--gold)">PLAYERS</code> array in the JS to load real MaxPreps exports.</span></div>
+
+  <div class="stats-subtabs">
+    <button class="stats-subtab active" onclick="showStatsPanel('hitting',this)">🏏 Hitting</button>
+    <button class="stats-subtab" onclick="showStatsPanel('pitching',this)">⚾ Pitching</button>
+  </div>
+
+  <!-- HITTING PANEL -->
+  <div id="hitting" class="stats-panel active">
+    <div class="stat-toolbar">
+      <span class="stat-toolbar-label">View:</span>
+      <button class="stat-cat-btn active" onclick="setHitView('standard',this)">Standard</button>
+      <button class="stat-cat-btn" onclick="setHitView('advanced',this)">Advanced</button>
+      <button class="stat-cat-btn" onclick="setHitView('all',this)">All</button>
+      <a class="mp-fulllink" href="https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--mountain/stat-leaders/?leagueid=997fc154-7b9c-4f2c-b22f-242464a7c81c" target="_blank">Full Leaders on MaxPreps ↗</a>
+    </div>
+    <div class="tbl-wrap">
+      <table class="stat-tbl" id="hitTbl">
+        <thead id="hitHead"></thead>
+        <tbody id="hitBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PITCHING PANEL -->
+  <div id="pitching" class="stats-panel">
+    <div class="stat-toolbar">
+      <span class="stat-toolbar-label">View:</span>
+      <button class="stat-cat-btn active" onclick="setPitchView('standard',this)">Standard</button>
+      <button class="stat-cat-btn" onclick="setPitchView('advanced',this)">Advanced</button>
+      <button class="stat-cat-btn" onclick="setPitchView('all',this)">All</button>
+      <a class="mp-fulllink" href="https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--mountain/stat-leaders/?leagueid=997fc154-7b9c-4f2c-b22f-242464a7c81c" target="_blank">Full Leaders on MaxPreps ↗</a>
+    </div>
+    <div class="tbl-wrap">
+      <table class="stat-tbl" id="pitchTbl">
+        <thead id="pitchHead"></thead>
+        <tbody id="pitchBody"></tbody>
+      </table>
+    </div>
+    <div style="margin-top:10px;padding:8px 12px;background:rgba(255,255,255,.04);border-left:3px solid var(--gold);border-radius:0 4px 4px 0;font-size:.72rem;color:var(--muted);line-height:1.6;">
+      <strong style="color:var(--gold-light);">* WHIP note:</strong>
+      MaxPreps league stat pages do not publish per-pitcher H-allowed or BB-allowed totals.
+      WHIP is estimated as <em>(BF − IP×3) / IP</em>, where BF − IP×3 approximates total base-runners reached.
+      FIP and xFIP require H, BB, and HR data and are shown as — until detailed game logs are available.
+      Strikeout % for batters is also unavailable from league leader pages.
+    </div>
+  </div>
+
+  <!-- GLOSSARY -->
+  <div class="glossary">
+    <div class="glossary-header" onclick="toggleGlossary()">
+      <span>📖 Stat Glossary &amp; Formulas</span>
+      <span id="glossArrow">▼</span>
+    </div>
+    <div class="glossary-body" id="glossBody">
+      <div style="margin-bottom:12px;font-size:.72rem;color:var(--muted);">Advanced metrics computed from base stats following standard sabermetric formulas.</div>
+      <div style="font-size:.75rem;font-weight:700;color:var(--gold);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Hitting</div>
+      <div class="glossary-grid">
+        <div class="gloss-item"><span class="gloss-term">AVG</span><span class="gloss-def">Batting Average — H / AB</span></div>
+        <div class="gloss-item"><span class="gloss-term">OBP</span><span class="gloss-def">On-Base % — (H+BB+HBP) / (AB+BB+HBP+SF)</span></div>
+        <div class="gloss-item"><span class="gloss-term">SLG</span><span class="gloss-def">Slugging % — Total Bases / AB</span></div>
+        <div class="gloss-item"><span class="gloss-term">OPS</span><span class="gloss-def">On-Base + Slugging (OBP + SLG)</span></div>
+        <div class="gloss-item"><span class="gloss-term">ISO <span class="adv-badge">ADV</span></span><span class="gloss-def">Isolated Power — SLG − AVG (extra-base hit power)</span></div>
+        <div class="gloss-item"><span class="gloss-term">BABIP <span class="adv-badge">ADV</span></span><span class="gloss-def">Batting Avg on Balls in Play — (H−HR) / (AB−K−HR+SF)</span></div>
+        <div class="gloss-item"><span class="gloss-term">wOBA <span class="adv-badge">ADV</span></span><span class="gloss-def">Weighted On-Base Avg — weights each outcome by run value (BB×.69, 1B×.89, 2B×1.27, 3B×1.62, HR×2.10)</span></div>
+        <div class="gloss-item"><span class="gloss-term">wRC+ <span class="adv-badge">ADV</span></span><span class="gloss-def">Weighted Runs Created Plus — park/league-adjusted wRC, 100 = average, &gt;100 above average</span></div>
+        <div class="gloss-item"><span class="gloss-term">oWAR <span class="adv-badge">ADV</span></span><span class="gloss-def">Offensive WAR — wins above replacement from batting + baserunning. Includes no defensive value. Based on wRAA + SB/CS runs + replacement adjustment (~20R/600PA).</span></div>
+        <div class="gloss-item"><span class="gloss-term">BB%</span><span class="gloss-def">Walk Rate — BB / PA</span></div>
+        <div class="gloss-item"><span class="gloss-term">K%</span><span class="gloss-def">Strikeout Rate — K / PA</span></div>
+        <div class="gloss-item"><span class="gloss-term">BB/K</span><span class="gloss-def">Walk-to-Strikeout Ratio — BB / K</span></div>
+        <div class="gloss-item"><span class="gloss-term">XBH</span><span class="gloss-def">Extra-Base Hits — 2B + 3B + HR</span></div>
+      </div>
+      <div style="font-size:.75rem;font-weight:700;color:var(--gold);margin:16px 0 8px;text-transform:uppercase;letter-spacing:1px;">Pitching</div>
+      <div class="glossary-grid">
+        <div class="gloss-item"><span class="gloss-term">ERA</span><span class="gloss-def">Earned Run Average — (ER × 9) / IP</span></div>
+        <div class="gloss-item"><span class="gloss-term">WHIP</span><span class="gloss-def">Walks + Hits per Inning Pitched — (BB+H) / IP</span></div>
+        <div class="gloss-item"><span class="gloss-term">K/9</span><span class="gloss-def">Strikeouts per 9 innings — (K × 9) / IP</span></div>
+        <div class="gloss-item"><span class="gloss-term">BB/9</span><span class="gloss-def">Walks per 9 innings — (BB × 9) / IP</span></div>
+        <div class="gloss-item"><span class="gloss-term">H/9</span><span class="gloss-def">Hits per 9 innings — (H × 9) / IP</span></div>
+        <div class="gloss-item"><span class="gloss-term">HR/9</span><span class="gloss-def">Home Runs per 9 innings — (HR × 9) / IP</span></div>
+        <div class="gloss-item"><span class="gloss-term">K/BB</span><span class="gloss-def">Strikeout-to-Walk Ratio — K / BB</span></div>
+        <div class="gloss-item"><span class="gloss-term">K%</span><span class="gloss-def">Strikeout Rate — K / batters faced</span></div>
+        <div class="gloss-item"><span class="gloss-term">BB%</span><span class="gloss-def">Walk Rate — BB / batters faced</span></div>
+        <div class="gloss-item"><span class="gloss-term">pWAR <span class="adv-badge">ADV</span></span><span class="gloss-def">Pitcher WAR — wins above replacement based on ERA vs. league average. Rep level ≈ 1.5× lgERA. Positive = better than a replacement-level pitcher.</span></div>
+        <div class="gloss-item"><span class="gloss-term">FIP <span class="adv-badge">ADV</span></span><span class="gloss-def">Fielding Independent Pitching — (13×HR + 3×BB − 2×K) / IP + 3.10. ERA-like scale, removes defense.</span></div>
+        <div class="gloss-item"><span class="gloss-term">xFIP <span class="adv-badge">ADV</span></span><span class="gloss-def">Expected FIP — normalizes HR rate to league average fly-ball HR%. More predictive than FIP.</span></div>
+        <div class="gloss-item"><span class="gloss-term">BABIP <span class="adv-badge">ADV</span></span><span class="gloss-def">Batting Avg on Balls in Play against pitcher. Average ~.300; higher may indicate bad luck.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ TEAMS ══════════ -->
+<div id="teams" class="section">
+  <div class="sec-div-label" style="color:var(--mountain)">⛰ Mountain League</div>
+  <div class="teams-grid" style="margin-bottom:28px;" id="teams-mountain"></div>
+  <div class="sec-div-label" style="color:var(--sunset)">🌅 Sunset League</div>
+  <div class="teams-grid" style="margin-bottom:28px;" id="teams-sunset"></div>
+  <div class="sec-div-label" style="color:var(--ocean)">🌊 Ocean League</div>
+  <div class="teams-grid" id="teams-ocean"></div>
+</div>
+
+</main>
+
+<footer>
+  CCAA Baseball · Spring 2026 · Central Coast Athletic Association, CA ·
+  Stats: <a href="https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--mountain/stat-leaders/?leagueid=997fc154-7b9c-4f2c-b22f-242464a7c81c" target="_blank">Mountain</a> ·
+  <a href="https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--sunset/stat-leaders/?leagueid=fb2b85ea-c8d0-4acf-873c-3296a5780eff" target="_blank">Sunset</a> ·
+  <a href="https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--ocean/stat-leaders/?leagueid=692cdcda-f9c9-46d2-a584-e075f5b97c75" target="_blank">Ocean</a>
+</footer>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════════════════
+//  TEAM & GAME DATA
+// ═══════════════════════════════════════════════════════════════
+const TEAM_COLORS = { mountain:'#c45d00', sunset:'#6c3483', ocean:'#0369a1' };
+const TEAMS = {
+  sj:    {name:'St. Joseph',      short:'SJ',  league:'mountain', city:'Orcutt',         url:'https://www.maxpreps.com/ca/orcutt/st-joseph-knights/baseball/'},
+  ag:    {name:'Arroyo Grande',   short:'AG',  league:'mountain', city:'Arroyo Grande',  url:'https://www.maxpreps.com/ca/arroyo-grande/arroyo-grande-eagles/baseball/'},
+  rhs:   {name:'Righetti',        short:'RHS', league:'mountain', city:'Santa Maria',    url:'https://www.maxpreps.com/ca/santa-maria/righetti-warriors/baseball/'},
+  mp:    {name:'Mission Prep',    short:'MP',  league:'mountain', city:'San Luis Obispo',url:'https://www.maxpreps.com/ca/san-luis-obispo/mission-college-prep-royals/baseball/'},
+  lom:   {name:'Lompoc',          short:'LOM', league:'mountain', city:'Lompoc',         url:'https://www.maxpreps.com/ca/lompoc/lompoc-braves/baseball/'},
+  cab:   {name:'Cabrillo',        short:'CAB', league:'mountain', city:'Lompoc',         url:'https://www.maxpreps.com/ca/lompoc/cabrillo-conquistadores/baseball/'},
+  slo:   {name:'San Luis Obispo', short:'SLO', league:'sunset',   city:'San Luis Obispo',url:'https://www.maxpreps.com/ca/san-luis-obispo/san-luis-obispo-tigers/baseball/'},
+  temp:  {name:'Templeton',       short:'TMP', league:'sunset',   city:'Templeton',      url:'https://www.maxpreps.com/ca/templeton/templeton-eagles/baseball/'},
+  ata:   {name:'Atascadero',      short:'ATA', league:'sunset',   city:'Atascadero',     url:'https://www.maxpreps.com/ca/atascadero/atascadero-greyhounds/baseball/'},
+  paso:  {name:'Paso Robles',     short:'PAS', league:'sunset',   city:'Paso Robles',    url:'https://www.maxpreps.com/ca/paso-robles/paso-robles-bearcats/baseball/'},
+  mb:    {name:'Morro Bay',       short:'MB',  league:'sunset',   city:'Morro Bay',      url:'https://www.maxpreps.com/ca/morro-bay/morro-bay-pirates/baseball/'},
+  nip:   {name:'Nipomo',          short:'NIP', league:'ocean',    city:'Nipomo',         url:'https://www.maxpreps.com/ca/nipomo/nipomo-titans/baseball/'},
+  pv:    {name:'Pioneer Valley',  short:'PV',  league:'ocean',    city:'Santa Maria',    url:'https://www.maxpreps.com/ca/santa-maria/pioneer-valley-panthers/baseball/'},
+  sy:    {name:'Santa Ynez',      short:'SY',  league:'ocean',    city:'Santa Ynez',     url:'https://www.maxpreps.com/ca/santa-ynez/santa-ynez-pirates/baseball/'},
+  sm:    {name:'Santa Maria',     short:'SM',  league:'ocean',    city:'Santa Maria',    url:'https://www.maxpreps.com/ca/santa-maria/santa-maria-saints/baseball/'},
+  oa:    {name:'Orcutt Academy',  short:'OA',  league:'ocean',    city:'Orcutt',         url:'https://www.maxpreps.com/ca/orcutt/orcutt-academy-spartans/baseball/'},
+};
+
+const GAMES_BY_DATE = {
+  apr11:[
+    {home:'sj',away:'lom',homeScore:null,awayScore:null,time:'3:30 PM'},
+    {home:'mp',away:'ag',homeScore:null,awayScore:null,time:'3:30 PM'},
+    {home:'nip',away:'sy',homeScore:null,awayScore:null,time:'3:30 PM'},
+  ],
+  apr9:[
+    {home:'slo',away:'ata',homeScore:null,awayScore:null,time:'2:00 PM'},
+    {home:'pv',away:'sm',homeScore:null,awayScore:null,time:'11:00 AM'},
+  ],
+  apr7:[
+    {home:'rhs',away:'ag',homeScore:null,awayScore:null,time:'3:30 PM',note:'Confirmed'},
+    {home:'cab',away:'lom',homeScore:null,awayScore:null,time:'3:30 PM'},
+    {home:'temp',away:'paso',homeScore:null,awayScore:null,time:'3:30 PM'},
+  ],
+  apr4:[
+    {home:'sm',away:'nip',homeScore:1,awayScore:10,confirmed:true},
+    {home:'sj',away:'mp',homeScore:7,awayScore:2},
+    {home:'ag',away:'cab',homeScore:11,awayScore:0},
+    {home:'slo',away:'mb',homeScore:8,awayScore:1},
+    {home:'sy',away:'pv',homeScore:3,awayScore:5},
+  ],
+  apr2:[
+    {home:'rhs',away:'lom',homeScore:6,awayScore:2},
+    {home:'nip',away:'oa',homeScore:12,awayScore:0},
+    {home:'temp',away:'ata',homeScore:5,awayScore:4},
+    {home:'sm',away:'sy',homeScore:2,awayScore:7},
+  ],
+  mar31:[
+    {home:'sj',away:'cab',homeScore:9,awayScore:1},
+    {home:'ag',away:'mp',homeScore:4,awayScore:3},
+    {home:'nip',away:'sm',homeScore:8,awayScore:1,confirmed:true},
+    {home:'pv',away:'oa',homeScore:7,awayScore:0},
+    {home:'slo',away:'paso',homeScore:5,awayScore:3},
+    {home:'sy',away:'sm',homeScore:6,awayScore:2},
+  ],
+  mar28:[
+    {home:'rhs',away:'sj',homeScore:3,awayScore:5},
+    {home:'lom',away:'ag',homeScore:1,awayScore:8},
+    {home:'ata',away:'temp',homeScore:2,awayScore:6},
+    {home:'nip',away:'pv',homeScore:4,awayScore:2},
+    {home:'mb',away:'slo',homeScore:0,awayScore:7},
+  ],
+  mar26:[
+    {home:'sj',away:'ag',homeScore:6,awayScore:3},
+    {home:'mp',away:'rhs',homeScore:2,awayScore:4},
+    {home:'sy',away:'nip',homeScore:1,awayScore:9},
+    {home:'pv',away:'sm',homeScore:8,awayScore:2},
+  ],
+};
+
+// ═══════════════════════════════════════════════════════════════
+//  PLAYER DATA  — update from MaxPreps exports
+//  Hitting fields: name,team,league,pa,ab,h,d,t,hr,r,rbi,bb,hbp,sf,k,sb,cs
+//  Advanced auto-computed: avg,obp,slg,ops,iso,babip,woba,wrcPlus,bbPct,kPct,bbk,xbh
+// ═══════════════════════════════════════════════════════════════
+const RAW_HITTERS = [
+  {name:'Beau Hageman', team:'nip', league:'ocean', pa:53, ab:43, h:24, d:1, t:0, hr:0, r:16, rbi:7, bb:4, hbp:2, sf:1, k:0, sb:9, cs:0},
+  {name:'Jaxon Glover', team:'sy', league:'ocean', pa:58, ab:53, h:26, d:4, t:2, hr:2, r:19, rbi:25, bb:3, hbp:1, sf:1, k:0, sb:7, cs:2},
+  {name:'Ivan Enriquez', team:'pv', league:'ocean', pa:44, ab:33, h:16, d:1, t:0, hr:1, r:10, rbi:14, bb:7, hbp:3, sf:1, k:0, sb:3, cs:0},
+  {name:'Kyle Heiduk', team:'sy', league:'ocean', pa:61, ab:49, h:22, d:3, t:1, hr:0, r:22, rbi:13, bb:11, hbp:1, sf:0, k:0, sb:8, cs:1},
+  {name:'Kyle Milner', team:'pv', league:'ocean', pa:36, ab:29, h:13, d:4, t:0, hr:0, r:0, rbi:10, bb:6, hbp:1, sf:0, k:0, sb:0, cs:0},
+  {name:'Josh Calderon', team:'sm', league:'ocean', pa:42, ab:37, h:16, d:0, t:0, hr:0, r:0, rbi:0, bb:2, hbp:1, sf:1, k:0, sb:0, cs:0},
+  {name:'Tristin Jeckell', team:'sy', league:'ocean', pa:45, ab:42, h:18, d:5, t:0, hr:0, r:15, rbi:15, bb:3, hbp:0, sf:0, k:0, sb:5, cs:0},
+  {name:'Elijah Roberts', team:'sy', league:'ocean', pa:45, ab:35, h:15, d:6, t:0, hr:0, r:11, rbi:10, bb:7, hbp:2, sf:1, k:0, sb:8, cs:3},
+  {name:'Bryce Alejo', team:'sm', league:'ocean', pa:42, ab:38, h:16, d:3, t:0, hr:0, r:0, rbi:11, bb:0, hbp:4, sf:0, k:0, sb:0, cs:0},
+  {name:'Diego Pulido', team:'sy', league:'ocean', pa:58, ab:42, h:17, d:5, t:0, hr:1, r:19, rbi:14, bb:11, hbp:4, sf:1, k:0, sb:8, cs:1},
+  {name:'David Aquistapace', team:'sy', league:'ocean', pa:57, ab:42, h:16, d:6, t:1, hr:0, r:15, rbi:13, bb:11, hbp:4, sf:0, k:0, sb:5, cs:1},
+  {name:'Eli Silveira', team:'nip', league:'ocean', pa:50, ab:40, h:15, d:2, t:0, hr:0, r:0, rbi:12, bb:6, hbp:4, sf:0, k:0, sb:3, cs:2},
+  {name:'Brady Cram', team:'sy', league:'ocean', pa:49, ab:40, h:15, d:0, t:0, hr:0, r:14, rbi:0, bb:7, hbp:1, sf:0, k:0, sb:7, cs:1},
+  {name:'Julius Medina', team:'sm', league:'ocean', pa:43, ab:32, h:12, d:1, t:0, hr:0, r:13, rbi:0, bb:11, hbp:0, sf:0, k:0, sb:4, cs:0},
+  {name:'Logan Hobbs', team:'nip', league:'ocean', pa:53, ab:43, h:15, d:1, t:0, hr:0, r:21, rbi:0, bb:3, hbp:6, sf:1, k:0, sb:9, cs:0},
+  {name:'Griffin Groshart', team:'nip', league:'ocean', pa:53, ab:48, h:16, d:7, t:0, hr:0, r:0, rbi:23, bb:3, hbp:1, sf:1, k:0, sb:0, cs:0},
+  {name:'Dominic Martin', team:'sm', league:'ocean', pa:43, ab:34, h:11, d:3, t:0, hr:0, r:12, rbi:0, bb:7, hbp:2, sf:0, k:0, sb:7, cs:0},
+  {name:'Chase Moulden', team:'nip', league:'ocean', pa:48, ab:44, h:14, d:4, t:0, hr:0, r:8, rbi:12, bb:3, hbp:1, sf:0, k:0, sb:5, cs:0},
+  {name:'David Cortez', team:'pv', league:'ocean', pa:51, ab:41, h:13, d:6, t:0, hr:0, r:12, rbi:7, bb:10, hbp:0, sf:0, k:0, sb:10, cs:10},
+  {name:'Andrew Rice', team:'sm', league:'ocean', pa:40, ab:36, h:11, d:0, t:0, hr:0, r:0, rbi:9, bb:2, hbp:2, sf:0, k:0, sb:0, cs:0},
+  {name:'Mike Rosas', team:'pv', league:'ocean', pa:35, ab:28, h:8, d:1, t:0, hr:0, r:0, rbi:0, bb:3, hbp:3, sf:0, k:0, sb:3, cs:1},
+  {name:'Sam Rhea', team:'sy', league:'ocean', pa:50, ab:39, h:11, d:1, t:0, hr:0, r:12, rbi:8, bb:4, hbp:4, sf:1, k:0, sb:3, cs:1},
+  {name:'Alex Ybarra', team:'sm', league:'ocean', pa:40, ab:32, h:9, d:2, t:0, hr:0, r:0, rbi:0, bb:7, hbp:1, sf:0, k:0, sb:0, cs:0},
+  {name:'Ethan Silveira', team:'nip', league:'ocean', pa:38, ab:36, h:10, d:1, t:0, hr:0, r:0, rbi:0, bb:1, hbp:0, sf:1, k:0, sb:0, cs:0},
+  {name:'Mason Skidmore', team:'sy', league:'ocean', pa:58, ab:51, h:14, d:4, t:0, hr:0, r:18, rbi:10, bb:5, hbp:1, sf:0, k:0, sb:13, cs:2},
+  {name:'Luke Hobbs', team:'nip', league:'ocean', pa:43, ab:35, h:9, d:2, t:0, hr:0, r:0, rbi:7, bb:6, hbp:1, sf:0, k:0, sb:0, cs:0},
+  {name:'Eddie Ponce', team:'pv', league:'ocean', pa:52, ab:41, h:10, d:0, t:1, hr:0, r:16, rbi:0, bb:6, hbp:4, sf:0, k:0, sb:10, cs:10},
+  {name:'Adrian Rice', team:'sm', league:'ocean', pa:28, ab:25, h:6, d:2, t:0, hr:0, r:0, rbi:7, bb:3, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Jordan Medina', team:'sm', league:'ocean', pa:38, ab:34, h:8, d:1, t:0, hr:0, r:0, rbi:0, bb:4, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Uriah Ponce', team:'pv', league:'ocean', pa:35, ab:32, h:7, d:1, t:0, hr:0, r:0, rbi:0, bb:1, hbp:1, sf:0, k:0, sb:0, cs:0},
+  {name:'Caden Palmer', team:'sy', league:'ocean', pa:17, ab:10, h:2, d:0, t:0, hr:0, r:0, rbi:0, bb:5, hbp:2, sf:0, k:0, sb:0, cs:0},
+  {name:'Kai Simonson', team:'nip', league:'ocean', pa:16, ab:15, h:3, d:0, t:0, hr:0, r:0, rbi:0, bb:0, hbp:0, sf:1, k:0, sb:0, cs:0},
+  {name:'Travis Barr', team:'nip', league:'ocean', pa:28, ab:26, h:5, d:0, t:0, hr:0, r:0, rbi:0, bb:0, hbp:1, sf:1, k:0, sb:0, cs:0},
+  {name:'Kamron Owen', team:'pv', league:'ocean', pa:34, ab:29, h:5, d:0, t:0, hr:0, r:0, rbi:0, bb:2, hbp:2, sf:1, k:0, sb:0, cs:0},
+  {name:'Trevor Oxley', team:'nip', league:'ocean', pa:34, ab:25, h:4, d:1, t:0, hr:0, r:0, rbi:0, bb:8, hbp:1, sf:0, k:0, sb:0, cs:0},
+  {name:'Uriyah Rodriguez', team:'sm', league:'ocean', pa:33, ab:25, h:4, d:0, t:0, hr:0, r:9, rbi:0, bb:6, hbp:2, sf:0, k:0, sb:0, cs:0},
+  {name:'Jonah Lopez', team:'pv', league:'ocean', pa:42, ab:39, h:6, d:0, t:1, hr:0, r:0, rbi:0, bb:1, hbp:1, sf:0, k:0, sb:5, cs:5},
+  {name:'Mark Andrade', team:'pv', league:'ocean', pa:30, ab:21, h:2, d:0, t:0, hr:0, r:0, rbi:0, bb:7, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Anders Winter', team:'ag', league:'mountain', pa:39, ab:31, h:19, d:1, t:0, hr:0, r:9, rbi:7, bb:2, hbp:5, sf:1, k:0, sb:4, cs:0},
+  {name:'Kamron Walker', team:'rhs', league:'mountain', pa:48, ab:41, h:24, d:8, t:0, hr:3, r:17, rbi:15, bb:6, hbp:0, sf:1, k:0, sb:8, cs:0},
+  {name:'Graysen Cole', team:'rhs', league:'mountain', pa:48, ab:37, h:19, d:3, t:0, hr:0, r:15, rbi:5, bb:7, hbp:0, sf:1, k:0, sb:4, cs:0},
+  {name:'Quentin Crotts', team:'mb', league:'mountain', pa:49, ab:38, h:19, d:6, t:1, hr:4, r:20, rbi:13, bb:5, hbp:6, sf:0, k:0, sb:3, cs:2},
+  {name:'Eli Hendricks', team:'sj', league:'mountain', pa:18, ab:12, h:6, d:1, t:0, hr:0, r:10, rbi:0, bb:6, hbp:0, sf:0, k:0, sb:2, cs:0},
+  {name:'Colton White', team:'mb', league:'mountain', pa:52, ab:35, h:17, d:1, t:0, hr:2, r:10, rbi:15, bb:5, hbp:0, sf:12, k:0, sb:5, cs:1},
+  {name:'Noah Kesner', team:'rhs', league:'mountain', pa:47, ab:35, h:17, d:2, t:1, hr:0, r:11, rbi:12, bb:10, hbp:0, sf:1, k:0, sb:6, cs:0},
+  {name:'Ruben Servin', team:'ag', league:'mountain', pa:60, ab:48, h:23, d:8, t:0, hr:3, r:17, rbi:13, bb:11, hbp:1, sf:0, k:0, sb:4, cs:0},
+  {name:'Ashton Bluem', team:'sj', league:'mountain', pa:67, ab:57, h:27, d:7, t:0, hr:5, r:26, rbi:14, bb:7, hbp:3, sf:0, k:0, sb:1, cs:0},
+  {name:'Nolan Roberts', team:'rhs', league:'mountain', pa:48, ab:35, h:16, d:4, t:1, hr:1, r:9, rbi:13, bb:10, hbp:1, sf:2, k:0, sb:7, cs:0},
+  {name:'Eli Brown', team:'mb', league:'mountain', pa:31, ab:31, h:14, d:0, t:0, hr:0, r:9, rbi:7, bb:0, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Connor Chanley', team:'sj', league:'mountain', pa:64, ab:47, h:18, d:4, t:1, hr:1, r:13, rbi:11, bb:6, hbp:9, sf:2, k:0, sb:0, cs:0},
+  {name:'Cruz Wilkinson', team:'mb', league:'mountain', pa:47, ab:40, h:15, d:6, t:1, hr:0, r:8, rbi:11, bb:7, hbp:0, sf:0, k:0, sb:3, cs:2},
+  {name:'Colton Gotchal', team:'ag', league:'mountain', pa:31, ab:27, h:10, d:3, t:0, hr:0, r:6, rbi:4, bb:1, hbp:1, sf:0, k:0, sb:0, cs:0},
+  {name:'Tanner Bournonville', team:'ag', league:'mountain', pa:51, ab:44, h:16, d:0, t:0, hr:3, r:11, rbi:14, bb:4, hbp:2, sf:1, k:0, sb:6, cs:0},
+  {name:'Cristiano Goncalves', team:'sj', league:'mountain', pa:59, ab:48, h:17, d:3, t:0, hr:0, r:9, rbi:16, bb:5, hbp:4, sf:2, k:0, sb:0, cs:0},
+  {name:'Tane Kurth', team:'ag', league:'mountain', pa:51, ab:43, h:15, d:5, t:0, hr:2, r:8, rbi:12, bb:5, hbp:1, sf:1, k:0, sb:2, cs:0},
+  {name:'Mason Anderson', team:'rhs', league:'mountain', pa:54, ab:49, h:17, d:1, t:0, hr:1, r:10, rbi:5, bb:4, hbp:1, sf:0, k:0, sb:7, cs:0},
+  {name:'Max Villegas', team:'rhs', league:'mountain', pa:33, ab:24, h:8, d:1, t:1, hr:1, r:8, rbi:6, bb:9, hbp:0, sf:0, k:0, sb:1, cs:0},
+  {name:'Mason Kon', team:'sj', league:'mountain', pa:29, ab:24, h:8, d:0, t:0, hr:0, r:0, rbi:8, bb:3, hbp:1, sf:1, k:0, sb:0, cs:0},
+  {name:'Tanner Gray', team:'mb', league:'mountain', pa:43, ab:37, h:12, d:3, t:0, hr:0, r:0, rbi:5, bb:2, hbp:4, sf:0, k:0, sb:2, cs:0},
+  {name:'Lucas Woodruff', team:'sj', league:'mountain', pa:45, ab:40, h:13, d:3, t:0, hr:1, r:6, rbi:12, bb:2, hbp:1, sf:0, k:0, sb:0, cs:0},
+  {name:'Brock Paz', team:'ag', league:'mountain', pa:26, ab:22, h:7, d:2, t:0, hr:1, r:0, rbi:7, bb:3, hbp:0, sf:1, k:0, sb:0, cs:0},
+  {name:'Reid Bronson', team:'ag', league:'mountain', pa:19, ab:16, h:5, d:0, t:0, hr:1, r:0, rbi:6, bb:2, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Maddox Richwine', team:'ag', league:'mountain', pa:33, ab:29, h:9, d:2, t:0, hr:0, r:6, rbi:5, bb:3, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Jones Stumph', team:'ag', league:'mountain', pa:50, ab:39, h:12, d:3, t:0, hr:0, r:13, rbi:6, bb:9, hbp:1, sf:0, k:0, sb:0, cs:0},
+  {name:'Jacob Kreowski', team:'ag', league:'mountain', pa:30, ab:26, h:7, d:1, t:0, hr:1, r:7, rbi:5, bb:4, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Jackson Ralph', team:'ag', league:'mountain', pa:60, ab:54, h:14, d:1, t:0, hr:1, r:10, rbi:6, bb:4, hbp:2, sf:0, k:0, sb:7, cs:0},
+  {name:'Max O\'Keefe', team:'sj', league:'mountain', pa:40, ab:31, h:8, d:1, t:0, hr:1, r:0, rbi:7, bb:7, hbp:1, sf:1, k:0, sb:0, cs:0},
+  {name:'Jack Deovlet', team:'mb', league:'mountain', pa:45, ab:35, h:9, d:2, t:0, hr:0, r:6, rbi:11, bb:6, hbp:2, sf:2, k:0, sb:1, cs:0},
+  {name:'Niko Verduzco', team:'rhs', league:'mountain', pa:44, ab:32, h:8, d:1, t:0, hr:0, r:9, rbi:6, bb:10, hbp:0, sf:0, k:0, sb:3, cs:0},
+  {name:'Thomas Winterberg', team:'ag', league:'mountain', pa:18, ab:16, h:4, d:1, t:0, hr:0, r:0, rbi:3, bb:2, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Kaden Warwick', team:'ag', league:'mountain', pa:17, ab:17, h:4, d:0, t:1, hr:0, r:0, rbi:1, bb:0, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Mason Majewski', team:'sj', league:'mountain', pa:44, ab:35, h:8, d:3, t:0, hr:0, r:6, rbi:7, bb:8, hbp:1, sf:0, k:0, sb:0, cs:0},
+  {name:'Dominic Nevarez', team:'rhs', league:'mountain', pa:42, ab:34, h:7, d:3, t:0, hr:0, r:0, rbi:7, bb:5, hbp:3, sf:0, k:0, sb:0, cs:0},
+  {name:'Xavier Horta', team:'sj', league:'mountain', pa:49, ab:39, h:8, d:1, t:0, hr:0, r:0, rbi:7, bb:5, hbp:0, sf:3, k:0, sb:0, cs:0},
+  {name:'Thomas Dugger', team:'sj', league:'mountain', pa:18, ab:15, h:3, d:1, t:0, hr:0, r:0, rbi:2, bb:2, hbp:1, sf:0, k:0, sb:2, cs:0},
+  {name:'Evan Davis', team:'mb', league:'mountain', pa:35, ab:32, h:6, d:2, t:0, hr:0, r:0, rbi:5, bb:2, hbp:0, sf:1, k:0, sb:1, cs:0},
+  {name:'Zander Andersen', team:'rhs', league:'mountain', pa:38, ab:28, h:5, d:1, t:0, hr:3, r:0, rbi:6, bb:7, hbp:2, sf:0, k:0, sb:0, cs:0},
+  {name:'Lance League', team:'mb', league:'mountain', pa:23, ab:19, h:3, d:0, t:0, hr:0, r:0, rbi:3, bb:3, hbp:0, sf:1, k:0, sb:2, cs:1},
+  {name:'Santana Covarrubias', team:'sj', league:'mountain', pa:58, ab:39, h:6, d:1, t:0, hr:0, r:15, rbi:1, bb:17, hbp:1, sf:0, k:0, sb:1, cs:0},
+  {name:'Robbie Roemling', team:'sj', league:'mountain', pa:34, ab:27, h:4, d:1, t:0, hr:0, r:0, rbi:0, bb:5, hbp:1, sf:0, k:0, sb:1, cs:0},
+  {name:'Cash Waldon', team:'mb', league:'mountain', pa:42, ab:38, h:5, d:0, t:0, hr:0, r:0, rbi:3, bb:3, hbp:1, sf:0, k:0, sb:2, cs:1},
+  {name:'Ben Walker', team:'mb', league:'mountain', pa:18, ab:15, h:1, d:0, t:0, hr:0, r:0, rbi:0, bb:0, hbp:3, sf:0, k:0, sb:0, cs:0},
+  {name:'Joseph Skaggs', team:'mb', league:'mountain', pa:18, ab:17, h:1, d:1, t:0, hr:0, r:0, rbi:0, bb:0, hbp:1, sf:0, k:0, sb:0, cs:0},
+  {name:'Jacob Riley', team:'slo', league:'sunset', pa:59, ab:48, h:22, d:2, t:0, hr:0, r:0, rbi:10, bb:9, hbp:1, sf:1, k:0, sb:0, cs:0},
+  {name:'Marcus Garcia', team:'paso', league:'sunset', pa:53, ab:43, h:19, d:4, t:1, hr:0, r:20, rbi:9, bb:9, hbp:1, sf:0, k:0, sb:0, cs:0},
+  {name:'Blayne Lowry', team:'paso', league:'sunset', pa:51, ab:41, h:17, d:3, t:1, hr:0, r:12, rbi:16, bb:8, hbp:0, sf:2, k:0, sb:0, cs:0},
+  {name:'Luke Stetz', team:'temp', league:'sunset', pa:50, ab:44, h:18, d:3, t:3, hr:0, r:10, rbi:8, bb:3, hbp:3, sf:0, k:0, sb:0, cs:0},
+  {name:'Colby Sims', team:'temp', league:'sunset', pa:55, ab:50, h:20, d:1, t:1, hr:0, r:14, rbi:0, bb:2, hbp:3, sf:0, k:0, sb:0, cs:0},
+  {name:'Talen Freitas', team:'paso', league:'sunset', pa:49, ab:42, h:16, d:6, t:0, hr:0, r:11, rbi:10, bb:3, hbp:3, sf:1, k:0, sb:0, cs:0},
+  {name:'Casey Prieto', team:'paso', league:'sunset', pa:47, ab:40, h:15, d:5, t:0, hr:0, r:10, rbi:9, bb:3, hbp:1, sf:2, k:0, sb:0, cs:0},
+  {name:'Jacob Clark', team:'cab', league:'sunset', pa:32, ab:24, h:9, d:1, t:0, hr:0, r:0, rbi:5, bb:3, hbp:1, sf:1, k:0, sb:0, cs:0},
+  {name:'Matthew Koff', team:'cab', league:'sunset', pa:37, ab:30, h:11, d:5, t:0, hr:0, r:8, rbi:5, bb:3, hbp:2, sf:0, k:0, sb:0, cs:0},
+  {name:'Emmett Dobroth', team:'paso', league:'sunset', pa:51, ab:42, h:15, d:2, t:1, hr:0, r:13, rbi:13, bb:5, hbp:4, sf:0, k:0, sb:0, cs:0},
+  {name:'James Goodwin', team:'slo', league:'sunset', pa:53, ab:44, h:15, d:1, t:0, hr:0, r:10, rbi:10, bb:4, hbp:4, sf:0, k:0, sb:0, cs:0},
+  {name:'Ethan Rendon', team:'paso', league:'sunset', pa:47, ab:43, h:14, d:3, t:0, hr:2, r:10, rbi:11, bb:1, hbp:2, sf:1, k:0, sb:0, cs:0},
+  {name:'Xander Hermanson', team:'paso', league:'sunset', pa:40, ab:34, h:11, d:5, t:0, hr:0, r:0, rbi:9, bb:4, hbp:1, sf:0, k:0, sb:0, cs:0},
+  {name:'Landon Drenckpohl', team:'slo', league:'sunset', pa:59, ab:53, h:17, d:3, t:1, hr:0, r:9, rbi:9, bb:5, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Leo Rivera', team:'temp', league:'sunset', pa:57, ab:47, h:15, d:1, t:0, hr:0, r:11, rbi:11, bb:6, hbp:1, sf:2, k:0, sb:0, cs:0},
+  {name:'Casey Stephens', team:'slo', league:'sunset', pa:56, ab:47, h:15, d:3, t:1, hr:0, r:11, rbi:9, bb:9, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Jaiden Soboleski', team:'paso', league:'sunset', pa:45, ab:39, h:12, d:4, t:1, hr:0, r:9, rbi:6, bb:5, hbp:1, sf:0, k:0, sb:0, cs:0},
+  {name:'Tyler Blaney', team:'slo', league:'sunset', pa:42, ab:33, h:10, d:2, t:0, hr:1, r:10, rbi:4, bb:9, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Wyatt Litten', team:'ata', league:'sunset', pa:53, ab:41, h:12, d:3, t:1, hr:0, r:0, rbi:13, bb:6, hbp:6, sf:0, k:0, sb:0, cs:0},
+  {name:'Steven Ernst', team:'ata', league:'sunset', pa:26, ab:25, h:7, d:1, t:0, hr:0, r:0, rbi:0, bb:1, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Asa Donaldson', team:'ata', league:'sunset', pa:26, ab:18, h:5, d:0, t:0, hr:0, r:0, rbi:0, bb:7, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Weston Witt', team:'ata', league:'sunset', pa:52, ab:33, h:9, d:2, t:0, hr:1, r:12, rbi:0, bb:18, hbp:1, sf:0, k:0, sb:0, cs:0},
+  {name:'Nate Argain', team:'temp', league:'sunset', pa:24, ab:22, h:6, d:1, t:0, hr:0, r:0, rbi:0, bb:1, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Logan Vorce', team:'cab', league:'sunset', pa:34, ab:30, h:8, d:0, t:0, hr:0, r:0, rbi:0, bb:3, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Tate Miller', team:'temp', league:'sunset', pa:17, ab:15, h:4, d:1, t:0, hr:0, r:0, rbi:0, bb:2, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Greyson Bramble', team:'slo', league:'sunset', pa:62, ab:57, h:15, d:5, t:0, hr:1, r:13, rbi:9, bb:5, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Fabian Lopez', team:'cab', league:'sunset', pa:45, ab:38, h:10, d:2, t:0, hr:0, r:0, rbi:0, bb:4, hbp:2, sf:1, k:0, sb:0, cs:0},
+  {name:'Nick Capaci', team:'temp', league:'sunset', pa:38, ab:31, h:8, d:1, t:0, hr:0, r:0, rbi:0, bb:5, hbp:1, sf:1, k:0, sb:0, cs:0},
+  {name:'Jaden Taylor', team:'slo', league:'sunset', pa:36, ab:31, h:8, d:1, t:0, hr:2, r:0, rbi:7, bb:5, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Jack Beckwith', team:'temp', league:'sunset', pa:42, ab:32, h:8, d:1, t:0, hr:0, r:0, rbi:7, bb:6, hbp:1, sf:0, k:0, sb:0, cs:0},
+  {name:'Damon Mitchell', team:'ata', league:'sunset', pa:35, ab:32, h:8, d:2, t:1, hr:0, r:0, rbi:5, bb:1, hbp:2, sf:0, k:0, sb:0, cs:0},
+  {name:'Noah Soderin', team:'slo', league:'sunset', pa:17, ab:12, h:3, d:0, t:0, hr:0, r:0, rbi:0, bb:4, hbp:1, sf:0, k:0, sb:0, cs:0},
+  {name:'Luke Olsen', team:'temp', league:'sunset', pa:61, ab:45, h:11, d:5, t:0, hr:0, r:14, rbi:4, bb:13, hbp:3, sf:0, k:0, sb:0, cs:0},
+  {name:'Gabe Barraza', team:'cab', league:'sunset', pa:48, ab:41, h:10, d:0, t:0, hr:0, r:8, rbi:0, bb:5, hbp:2, sf:0, k:0, sb:0, cs:0},
+  {name:'Ryder Garcia', team:'temp', league:'sunset', pa:27, ab:25, h:6, d:0, t:1, hr:1, r:0, rbi:0, bb:2, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Parker Wyatt', team:'slo', league:'sunset', pa:58, ab:47, h:10, d:1, t:0, hr:0, r:9, rbi:9, bb:6, hbp:3, sf:1, k:0, sb:0, cs:0},
+  {name:'Jackson Buys', team:'temp', league:'sunset', pa:24, ab:19, h:4, d:1, t:0, hr:0, r:0, rbi:0, bb:3, hbp:0, sf:2, k:0, sb:0, cs:0},
+  {name:'Jacob Low', team:'cab', league:'sunset', pa:24, ab:19, h:4, d:2, t:0, hr:0, r:0, rbi:0, bb:3, hbp:2, sf:0, k:0, sb:0, cs:0},
+  {name:'Colby Hamilton', team:'temp', league:'sunset', pa:40, ab:29, h:6, d:1, t:0, hr:0, r:0, rbi:6, bb:8, hbp:2, sf:1, k:0, sb:0, cs:0},
+  {name:'Leo Ragoza', team:'cab', league:'sunset', pa:18, ab:15, h:3, d:0, t:0, hr:0, r:0, rbi:0, bb:2, hbp:1, sf:0, k:0, sb:0, cs:0},
+  {name:'Colton Powell', team:'cab', league:'sunset', pa:50, ab:44, h:8, d:3, t:0, hr:0, r:0, rbi:0, bb:6, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Felix Hernandez', team:'cab', league:'sunset', pa:49, ab:44, h:8, d:1, t:1, hr:0, r:0, rbi:0, bb:3, hbp:2, sf:0, k:0, sb:0, cs:0},
+  {name:'Wyatt Azelton', team:'ata', league:'sunset', pa:52, ab:39, h:7, d:2, t:1, hr:0, r:0, rbi:8, bb:8, hbp:4, sf:1, k:0, sb:0, cs:0},
+  {name:'Evan Wanner', team:'ata', league:'sunset', pa:51, ab:34, h:6, d:0, t:0, hr:0, r:10, rbi:4, bb:13, hbp:1, sf:1, k:0, sb:0, cs:0},
+  {name:'Jackson Litten', team:'ata', league:'sunset', pa:45, ab:34, h:6, d:2, t:0, hr:0, r:0, rbi:4, bb:6, hbp:3, sf:1, k:0, sb:0, cs:0},
+  {name:'Max Beck', team:'ata', league:'sunset', pa:27, ab:23, h:4, d:0, t:0, hr:0, r:0, rbi:0, bb:4, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Chris Glover', team:'paso', league:'sunset', pa:19, ab:13, h:2, d:0, t:0, hr:0, r:0, rbi:0, bb:3, hbp:1, sf:0, k:0, sb:0, cs:0},
+  {name:'Miguel Zepeda', team:'ata', league:'sunset', pa:44, ab:33, h:5, d:1, t:1, hr:0, r:0, rbi:5, bb:7, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Blake Schafer', team:'slo', league:'sunset', pa:37, ab:23, h:3, d:1, t:0, hr:0, r:0, rbi:0, bb:11, hbp:0, sf:0, k:0, sb:0, cs:0},
+  {name:'Caden Sunndeniyage', team:'cab', league:'sunset', pa:22, ab:20, h:2, d:0, t:0, hr:0, r:0, rbi:0, bb:0, hbp:0, sf:0, k:0, sb:0, cs:0}
+];
+
+
+
+const RAW_PITCHERS = [
+  {name:'Izaiah Garcia', team:'pv', league:'ocean', w:2, l:0, ip:13.0000, bf:49, er:1, k:10, hbp:0},
+  {name:'Bryce Alejo', team:'sm', league:'ocean', w:0, l:0, ip:8.0000, bf:29, er:1, k:7, hbp:0},
+  {name:'Kamron Owen', team:'pv', league:'ocean', w:1, l:0, ip:11.0000, bf:54, er:2, k:10, hbp:0},
+  {name:'Julian Valdez', team:'pv', league:'ocean', w:2, l:0, ip:15.6667, bf:68, er:3, k:16, hbp:0},
+  {name:'Elijah Roberts', team:'sy', league:'ocean', w:2, l:0, ip:16.6667, bf:68, er:4, k:24, hbp:0},
+  {name:'Caden Palmer', team:'sy', league:'ocean', w:3, l:0, ip:16.3333, bf:64, er:4, k:22, hbp:0},
+  {name:'Tristin Jeckell', team:'sy', league:'ocean', w:2, l:2, ip:31.3333, bf:139, er:12, k:53, hbp:0},
+  {name:'Eli Silveira', team:'nip', league:'ocean', w:5, l:1, ip:27.6667, bf:126, er:11, k:30, hbp:0},
+  {name:'Jacob Beltran', team:'pv', league:'ocean', w:2, l:1, ip:19.3333, bf:83, er:7, k:14, hbp:0},
+  {name:'Jordan Medina', team:'sm', league:'ocean', w:1, l:1, ip:12.0000, bf:60, er:4, k:15, hbp:0},
+  {name:'Julius Medina', team:'sm', league:'ocean', w:1, l:3, ip:18.3333, bf:105, er:7, k:31, hbp:0},
+  {name:'Dominic Martin', team:'sm', league:'ocean', w:1, l:2, ip:23.3333, bf:110, er:9, k:30, hbp:0},
+  {name:'Ethan Silveira', team:'nip', league:'ocean', w:2, l:1, ip:20.3333, bf:108, er:10, k:25, hbp:0},
+  {name:'Griffin Groshart', team:'nip', league:'ocean', w:0, l:3, ip:27.6667, bf:126, er:15, k:0, hbp:0},
+  {name:'Jaxon Glover', team:'sy', league:'ocean', w:0, l:0, ip:7.3333, bf:28, er:0, k:14, hbp:0},
+  {name:'Zack Johnson', team:'ag', league:'mountain', w:0, l:0, ip:13.6667, bf:55, er:0, k:7, hbp:0},
+  {name:'Ryan Aparicio', team:'sj', league:'mountain', w:0, l:0, ip:9.3333, bf:45, er:1, k:6, hbp:0},
+  {name:'Thomas Winterberg', team:'ag', league:'mountain', w:0, l:0, ip:19.0000, bf:81, er:3, k:18, hbp:0},
+  {name:'Grady Pope', team:'ag', league:'mountain', w:0, l:0, ip:21.0000, bf:89, er:4, k:16, hbp:0},
+  {name:'Israel Rocha', team:'rhs', league:'mountain', w:3, l:1, ip:27.3333, bf:124, er:8, k:19, hbp:0},
+  {name:'Lucas Woodruff', team:'sj', league:'mountain', w:3, l:0, ip:22.3333, bf:95, er:7, k:17, hbp:0},
+  {name:'Cruz Wilkinson', team:'mb', league:'mountain', w:2, l:1, ip:19.0000, bf:83, er:6, k:17, hbp:0},
+  {name:'Mason Majewski', team:'sj', league:'mountain', w:4, l:1, ip:27.6667, bf:117, er:9, k:38, hbp:0},
+  {name:'Xavier Horta', team:'sj', league:'mountain', w:3, l:1, ip:21.3333, bf:89, er:7, k:21, hbp:0},
+  {name:'Connor Chanley', team:'sj', league:'mountain', w:3, l:0, ip:13.6667, bf:62, er:5, k:12, hbp:0},
+  {name:'Robbie Roemling', team:'sj', league:'mountain', w:0, l:0, ip:8.0000, bf:36, er:3, k:10, hbp:0},
+  {name:'Owen King', team:'ag', league:'mountain', w:0, l:0, ip:8.0000, bf:37, er:3, k:11, hbp:0},
+  {name:'Kamron Walker', team:'rhs', league:'mountain', w:1, l:0, ip:8.0000, bf:40, er:3, k:6, hbp:0},
+  {name:'Tanner Bournonville', team:'ag', league:'mountain', w:0, l:0, ip:17.0000, bf:70, er:7, k:11, hbp:0},
+  {name:'Gabriel Rodriguez', team:'rhs', league:'mountain', w:2, l:0, ip:20.6667, bf:85, er:9, k:5, hbp:0},
+  {name:'Eli Brown', team:'mb', league:'mountain', w:3, l:2, ip:26.3333, bf:117, er:12, k:27, hbp:0},
+  {name:'Jacob Kreowski', team:'ag', league:'mountain', w:0, l:0, ip:16.0000, bf:78, er:8, k:8, hbp:0},
+  {name:'Nathan Lancor', team:'rhs', league:'mountain', w:2, l:2, ip:16.6667, bf:84, er:11, k:11, hbp:0},
+  {name:'Colton White', team:'mb', league:'mountain', w:1, l:0, ip:8.6667, bf:40, er:7, k:8, hbp:0},
+  {name:'Evan Davis', team:'mb', league:'mountain', w:2, l:2, ip:16.0000, bf:81, er:14, k:7, hbp:0},
+  {name:'Jacob Riley', team:'slo', league:'sunset', w:1, l:0, ip:16.0000, bf:66, er:2, k:15, hbp:0},
+  {name:'Marcus Garcia', team:'paso', league:'sunset', w:0, l:0, ip:8.0000, bf:31, er:1, k:15, hbp:0},
+  {name:'Ethan Rendon', team:'paso', league:'sunset', w:4, l:0, ip:21.3333, bf:99, er:5, k:38, hbp:0},
+  {name:'Nate Contreras', team:'paso', league:'sunset', w:2, l:1, ip:21.0000, bf:86, er:5, k:20, hbp:0},
+  {name:'Jacob Heidt', team:'cab', league:'sunset', w:1, l:0, ip:8.3333, bf:40, er:2, k:0, hbp:0},
+  {name:'Aiden Abatti', team:'temp', league:'sunset', w:0, l:0, ip:22.3333, bf:111, er:6, k:22, hbp:0},
+  {name:'Talen Freitas', team:'paso', league:'sunset', w:1, l:0, ip:12.6667, bf:58, er:4, k:11, hbp:0},
+  {name:'Jaden Taylor', team:'slo', league:'sunset', w:3, l:3, ip:33.0000, bf:157, er:15, k:40, hbp:0},
+  {name:'Wyatt Azelton', team:'ata', league:'sunset', w:2, l:2, ip:30.6667, bf:140, er:14, k:28, hbp:0},
+  {name:'Weston Witt', team:'ata', league:'sunset', w:1, l:2, ip:24.0000, bf:113, er:12, k:14, hbp:0},
+  {name:'Greyson Bramble', team:'slo', league:'sunset', w:5, l:1, ip:29.6667, bf:130, er:15, k:19, hbp:0},
+  {name:'Jacob Clark', team:'cab', league:'sunset', w:0, l:0, ip:8.6667, bf:49, er:5, k:8, hbp:0},
+  {name:'Leo Rivera', team:'temp', league:'sunset', w:2, l:0, ip:25.0000, bf:126, er:15, k:20, hbp:0},
+  {name:'Forrest Avrett', team:'slo', league:'sunset', w:0, l:0, ip:16.0000, bf:79, er:10, k:16, hbp:0},
+  {name:'Colton Powell', team:'cab', league:'sunset', w:0, l:0, ip:14.0000, bf:58, er:9, k:7, hbp:0},
+  {name:'Damon Mitchell', team:'ata', league:'sunset', w:1, l:2, ip:13.3333, bf:67, er:9, k:7, hbp:0},
+  {name:'Ryder Garcia', team:'temp', league:'sunset', w:0, l:0, ip:13.0000, bf:62, er:9, k:7, hbp:0},
+  {name:'Spencer Roby', team:'paso', league:'sunset', w:0, l:0, ip:10.0000, bf:47, er:7, k:0, hbp:0},
+  {name:'Blayne Lowry', team:'paso', league:'sunset', w:0, l:0, ip:10.0000, bf:47, er:7, k:14, hbp:0},
+  {name:'Jacob Low', team:'cab', league:'sunset', w:1, l:5, ip:27.3333, bf:136, er:20, k:19, hbp:0},
+  {name:'Nate Argain', team:'temp', league:'sunset', w:1, l:1, ip:23.6667, bf:133, er:26, k:16, hbp:0},
+  {name:'Fabian Lopez', team:'cab', league:'sunset', w:0, l:0, ip:18.6667, bf:108, er:22, k:10, hbp:0},
+  {name:'Matthew Koff', team:'cab', league:'sunset', w:0, l:0, ip:8.0000, bf:51, er:0, k:9, hbp:0}
+];
+
+// ═══════════════════════════════════════════════════════════════
+//  COMPUTE ADVANCED STATS
+// ═══════════════════════════════════════════════════════════════
+
+// Compute league-wide averages from raw data for WAR baselines
+function computeLeagueAverages(rawH, rawP) {
+  let wobaNumer = 0, totalPA = 0;
+  rawH.forEach(p => {
+    const singles = p.h - p.d - p.t - p.hr;
+    const num = 0.69*p.bb + 0.72*p.hbp + 0.89*singles + 1.27*p.d + 1.62*p.t + 2.10*p.hr;
+    const den = p.ab + p.bb + p.sf + p.hbp;
+    if (den > 0) { wobaNumer += (num/den) * p.pa; totalPA += p.pa; }
+  });
+  const lgwOBA = totalPA > 0 ? wobaNumer / totalPA : 0.320;
+  let totalER = 0, totalIP = 0;
+  rawP.forEach(p => { totalER += p.er; totalIP += p.ip; });
+  const lgERA = totalIP > 0 ? totalER * 9 / totalIP : 3.50;
+  return { lgwOBA, lgERA };
+}
+
+function computeHitters(raw, lgwOBA) {
+  lgwOBA = lgwOBA || 0.320;
+  return raw.map(p => {
+    const singles = p.h - p.d - p.t - p.hr;
+    const tb = singles + 2*p.d + 3*p.t + 4*p.hr;
+    const avg = p.ab > 0 ? p.h / p.ab : 0;
+    const obp = (p.ab + p.bb + p.hbp + p.sf) > 0
+      ? (p.h + p.bb + p.hbp) / (p.ab + p.bb + p.hbp + p.sf) : 0;
+    const slg = p.ab > 0 ? tb / p.ab : 0;
+    const ops = obp + slg;
+    const iso = slg - avg;
+    const babipDenom = p.ab - p.k - p.hr + p.sf;
+    const babip = babipDenom > 0 ? (p.h - p.hr) / babipDenom : 0;
+    // wOBA (2024 weights)
+    const woba = p.pa > 0
+      ? (0.69*p.bb + 0.72*p.hbp + 0.89*singles + 1.27*p.d + 1.62*p.t + 2.10*p.hr)
+        / (p.ab + p.bb + p.sf + p.hbp) : 0;
+    // wRC+: league-adjusted, 100 = avg
+    const wrcPlus = Math.round((woba / lgwOBA) * 100);
+    const bbPct = p.pa > 0 ? p.bb / p.pa : 0;
+    const kPct  = p.pa > 0 ? p.k  / p.pa : 0;
+    const bbk   = p.k > 0 ? p.bb / p.k : 0;
+    const xbh   = p.d + p.t + p.hr;
+    // oWAR (batting + baserunning, no defense — compared to replacement level)
+    // wRAA = runs above avg batter; repRuns = value of playing vs replacement (~20R/600PA)
+    const wRAA   = (woba - lgwOBA) / 1.15 * p.pa;
+    const bsr    = p.sb * 0.2 - p.cs * 0.4;
+    const repRuns = 20 * p.pa / 600;
+    const oWAR   = parseFloat(((wRAA + bsr + repRuns) / 9).toFixed(1));
+    return {...p, tb, singles, avg, obp, slg, ops, iso, babip, woba, wrcPlus, bbPct, kPct, bbk, xbh, oWAR};
+  });
+}
+
+function formatIP(ip) {
+  // Convert decimal IP (31.333) to display "31.1" (1/3 inning notation)
+  if (!ip || ip === 0) return '0';
+  const whole = Math.floor(ip + 0.001);
+  const frac  = Math.round((ip - whole) * 3);
+  return frac === 0 ? String(whole) : `${whole}.${frac}`;
+}
+
+function computePitchers(raw, lgERA) {
+  lgERA = lgERA || 3.50;
+  return raw.map(p => {
+    const era   = p.ip > 0 ? (p.er * 9) / p.ip : 99;
+    // H and BB may be 0 because MaxPreps doesn't have separate leader pages for those.
+    // When both are 0, estimate WHIP from BF: (H+BB) ≈ BF - IP*3
+    const hbbKnown  = p.h > 0 || p.bb > 0;
+    const estHplusBB = (p.bf > 0 && p.ip > 0) ? Math.max(0, p.bf - p.ip * 3) : 0;
+    const whip      = p.ip > 0 ? (hbbKnown ? (p.bb + p.h) / p.ip : estHplusBB / p.ip) : 99;
+    const whipEst   = !hbbKnown; // true = estimated from BF
+    const k9        = p.ip > 0 ? (p.k  * 9) / p.ip : 0;
+    // Stats requiring H/BB/HR are null when data is unavailable
+    const bb9   = (hbbKnown && p.ip > 0) ? (p.bb * 9) / p.ip : null;
+    const h9    = (hbbKnown && p.ip > 0) ? (p.h  * 9) / p.ip : null;
+    const hr9   = (p.hr > 0  && p.ip > 0) ? (p.hr * 9) / p.ip : null;
+    const kbb   = p.bb > 0  ? p.k / p.bb : null;
+    // Use stored BF from MaxPreps for K%
+    const bf    = p.bf > 0 ? p.bf : Math.round(p.ip * 3.2);
+    const kPct  = bf > 0 ? p.k  / bf : 0;
+    const bbPct = (hbbKnown && bf > 0) ? p.bb / bf : null;
+    // FIP/xFIP require BB and HR data
+    const fip   = hbbKnown ? (13*p.hr + 3*(p.bb+p.hbp) - 2*p.k) / p.ip + 3.10 : null;
+    const bip   = Math.max(1, p.ip*3 - p.k);
+    const xHR   = bip * 0.40 * 0.105;
+    const xfip  = hbbKnown ? (13*xHR + 3*(p.bb+p.hbp) - 2*p.k) / p.ip + 3.10 : null;
+    const babipDenom = Math.max(1, p.ip*3 - p.k - p.hr);
+    const babip = hbbKnown ? (p.h - p.hr) / babipDenom : null;
+    // pWAR: ERA-based, compared to replacement level (rep ERA ≈ 1.5x lgERA)
+    // pWAR = (1.5*lgERA - ERA) * IP / 81  — zero WAR at replacement ERA, positive above
+    const pWAR = p.ip > 0 ? parseFloat(((1.5 * lgERA - era) * p.ip / 81).toFixed(1)) : 0;
+    return {...p, era, whip, whipEst, k9, bb9, h9, hr9, kbb, kPct, bbPct, fip, xfip, babip, bf, pWAR};
+  });
+}
+
+const LG           = computeLeagueAverages(RAW_HITTERS, RAW_PITCHERS);
+const ALL_HITTERS  = computeHitters(RAW_HITTERS, LG.lgwOBA);
+const ALL_PITCHERS = computePitchers(RAW_PITCHERS, LG.lgERA);
+
+// ═══════════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════════
+let currentLeague  = 'all';
+let currentDate    = 'apr2';
+let hitSortCol     = 'woba';
+let hitSortDir     = 'desc';
+let pitchSortCol   = 'era';
+let pitchSortDir   = 'asc';
+let hitView        = 'standard';
+let pitchView      = 'standard';
+
+// ═══════════════════════════════════════════════════════════════
+//  HIT TABLE COLUMNS
+// ═══════════════════════════════════════════════════════════════
+const HIT_COLS_STD = [
+  {key:'rank',   label:'#',      fmt:'rank',  adv:false},
+  {key:'name',   label:'Player', fmt:'name',  adv:false, left:true},
+  {key:'team',   label:'Team',   fmt:'team',  adv:false, left:true},
+  {key:'pa',     label:'PA',     fmt:'int',   adv:false},
+  {key:'ab',     label:'AB',     fmt:'int',   adv:false},
+  {key:'h',      label:'H',      fmt:'int',   adv:false},
+  {key:'d',      label:'2B',     fmt:'int',   adv:false},
+  {key:'t',      label:'3B',     fmt:'int',   adv:false},
+  {key:'hr',     label:'HR',     fmt:'int',   adv:false},
+  {key:'r',      label:'R',      fmt:'int',   adv:false},
+  {key:'rbi',    label:'RBI',    fmt:'int',   adv:false},
+  {key:'bb',     label:'BB',     fmt:'int',   adv:false},
+  {key:'sb',     label:'SB',     fmt:'int',   adv:false},
+  {key:'avg',    label:'AVG',    fmt:'avg',   adv:false},
+  {key:'obp',    label:'OBP',    fmt:'avg',   adv:false},
+  {key:'slg',    label:'SLG',    fmt:'avg',   adv:false},
+  {key:'ops',    label:'OPS',    fmt:'ops',   adv:false},
+];
+const HIT_COLS_ADV = [
+  {key:'rank',   label:'#',      fmt:'rank',  adv:false},
+  {key:'name',   label:'Player', fmt:'name',  adv:false, left:true},
+  {key:'team',   label:'Team',   fmt:'team',  adv:false, left:true},
+  {key:'pa',     label:'PA',     fmt:'int',   adv:false},
+  {key:'avg',    label:'AVG',    fmt:'avg',   adv:false},
+  {key:'obp',    label:'OBP',    fmt:'avg',   adv:false},
+  {key:'slg',    label:'SLG',    fmt:'avg',   adv:false},
+  {key:'ops',    label:'OPS',    fmt:'ops',   adv:false},
+  {key:'iso',    label:'ISO',    fmt:'avg',   adv:true},
+  {key:'babip',  label:'BABIP',  fmt:'avg',   adv:true},
+  {key:'woba',   label:'wOBA',   fmt:'avg',   adv:true},
+  {key:'wrcPlus',label:'wRC+',   fmt:'int',   adv:true},
+  {key:'oWAR',   label:'oWAR',   fmt:'war',   adv:true},
+  {key:'bbPct',  label:'BB%',    fmt:'pct',   adv:true},
+  {key:'xbh',    label:'XBH',    fmt:'int',   adv:false},
+];
+
+function getHitCols() {
+  if (hitView === 'standard') return HIT_COLS_STD;
+  if (hitView === 'advanced')  return HIT_COLS_ADV;
+  // all
+  const combined = [...HIT_COLS_STD];
+  const advOnly = HIT_COLS_ADV.filter(c => c.adv && !combined.find(x=>x.key===c.key));
+  return [...combined, ...advOnly];
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  PITCH TABLE COLUMNS
+// ═══════════════════════════════════════════════════════════════
+const PITCH_COLS_STD = [
+  {key:'rank',  label:'#',     fmt:'rank', adv:false},
+  {key:'name',  label:'Player',fmt:'name', adv:false, left:true},
+  {key:'team',  label:'Team',  fmt:'team', adv:false, left:true},
+  {key:'w',     label:'W',     fmt:'int',  adv:false},
+  {key:'l',     label:'L',     fmt:'int',  adv:false},
+  {key:'ip',    label:'IP',    fmt:'ip',   adv:false},
+  {key:'bf',    label:'BF',    fmt:'int',  adv:false},
+  {key:'k',     label:'K',     fmt:'int',  adv:false},
+  {key:'era',   label:'ERA',   fmt:'era',  adv:false},
+  {key:'whip',  label:'WHIP*', fmt:'era',  adv:false},
+  {key:'k9',    label:'K/9',   fmt:'dec2', adv:false},
+  {key:'kPct',  label:'K%',    fmt:'pct',  adv:false},
+  {key:'pWAR',  label:'pWAR',  fmt:'war',  adv:false},
+];
+const PITCH_COLS_ADV = [
+  {key:'rank',  label:'#',     fmt:'rank', adv:false},
+  {key:'name',  label:'Player',fmt:'name', adv:false, left:true},
+  {key:'team',  label:'Team',  fmt:'team', adv:false, left:true},
+  {key:'ip',    label:'IP',    fmt:'ip',   adv:false},
+  {key:'bf',    label:'BF',    fmt:'int',  adv:false},
+  {key:'era',   label:'ERA',   fmt:'era',  adv:false},
+  {key:'whip',  label:'WHIP*', fmt:'era',  adv:false},
+  {key:'k9',    label:'K/9',   fmt:'dec2', adv:true},
+  {key:'kPct',  label:'K%',    fmt:'pct',  adv:true},
+  {key:'pWAR',  label:'pWAR',  fmt:'war',  adv:true},
+  {key:'fip',   label:'FIP',   fmt:'era',  adv:true},
+  {key:'xfip',  label:'xFIP',  fmt:'era',  adv:true},
+];
+
+function getPitchCols() {
+  if (pitchView === 'standard') return PITCH_COLS_STD;
+  if (pitchView === 'advanced') return PITCH_COLS_ADV;
+  const combined = [...PITCH_COLS_STD];
+  const advOnly = PITCH_COLS_ADV.filter(c => c.adv && !combined.find(x=>x.key===c.key));
+  return [...combined, ...advOnly];
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  FORMAT
+// ═══════════════════════════════════════════════════════════════
+function fmt(val, type, col, all) {
+  if (type === 'rank')  return '';
+  if (type === 'name')  return `<span class="player-col">${val}</span>`;
+  if (type === 'team') {
+    const t = TEAMS[val];
+    return `<span class="league-dot-sm ${t.league}"></span>${t.name}`;
+  }
+  // Null means data not available
+  if (val === null || val === undefined) return '<span style="color:var(--muted)">—</span>';
+  if (type === 'int')   return val;
+  if (type === 'avg')   return isNaN(val) ? '—' : (val >= 1 ? val.toFixed(3) : val.toFixed(3).replace('0.','.'));
+  if (type === 'ops')   return isNaN(val) ? '—' : (val >= 1 ? val.toFixed(3) : val.toFixed(3).replace('0.','.'));
+  if (type === 'era')   return (isNaN(val)||val >= 99) ? '—' : val.toFixed(2);
+  if (type === 'pct')   return isNaN(val) ? '—' : (val*100).toFixed(1) + '%';
+  if (type === 'dec2')  return isNaN(val) ? '—' : val.toFixed(2);
+  if (type === 'war')   return isNaN(val) ? '—' : val.toFixed(1);
+  if (type === 'ip')    return formatIP(val);
+  return val;
+}
+
+function colorClass(val, key) {
+  // simple heat: highlight best performers
+  const highGood = ['hr','r','rbi','bb','sb','h','tb','xbh','ops','woba','iso','avg','obp','slg','wrcPlus','oWAR','pWAR','k9','kbb','k','w'];
+  const lowGood  = ['era','fip','xfip','whip','bb9','hr9','babip','k'];
+  if (key === 'k' ) return ''; // neutral for hitter K
+  if (highGood.includes(key)) {
+    if (typeof val !== 'number') return '';
+    return val > 0 ? '' : '';
+  }
+  return '';
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  RENDER TABLES
+// ═══════════════════════════════════════════════════════════════
+function renderHitTable() {
+  const cols = getHitCols();
+  let data = ALL_HITTERS.filter(p => currentLeague === 'all' || p.league === currentLeague);
+
+  // sort — nulls always go to the bottom
+  data = data.slice().sort((a,b) => {
+    const av = a[hitSortCol], bv = b[hitSortCol];
+    if (av === null || av === undefined) return 1;
+    if (bv === null || bv === undefined) return -1;
+    return hitSortDir === 'desc' ? bv - av : av - bv;
+  });
+
+  // head
+  const head = document.getElementById('hitHead');
+  head.innerHTML = '<tr>' + cols.map(c => {
+    const isSort = c.key === hitSortCol;
+    const arrow  = isSort ? (hitSortDir === 'desc' ? ' ↓' : ' ↑') : '';
+    const adv    = c.adv ? '<span class="adv-badge">adv</span>' : '';
+    return `<th class="${c.left?'left':''} ${isSort?'active-sort':''}"
+      onclick="sortHit('${c.key}')">${c.label}${adv}${isSort?arrow:''}</th>`;
+  }).join('') + '</tr>';
+
+  // body
+  const body = document.getElementById('hitBody');
+  body.innerHTML = data.map((p, i) => {
+    const rank = i + 1;
+    const rClass = rank===1?'r1':rank===2?'r2':rank===3?'r3':'';
+    return '<tr>' + cols.map(c => {
+      if (c.key === 'rank') return `<td class="rank-col left ${rClass}">${rank}</td>`;
+      const v = p[c.key];
+      const f = fmt(v, c.fmt, c.key, data);
+      const left = c.fmt === 'name' || c.fmt === 'team' ? ' left' : '';
+      const nameClass = c.fmt === 'name' ? ' player-col' : '';
+      const teamClass = c.fmt === 'team' ? ' team-col' : '';
+      return `<td class="${left}${nameClass}${teamClass}">${f}</td>`;
+    }).join('') + '</tr>';
+  }).join('');
+}
+
+function renderPitchTable() {
+  const cols = getPitchCols();
+  let data = ALL_PITCHERS.filter(p => currentLeague === 'all' || p.league === currentLeague);
+
+  data = data.slice().sort((a,b) => {
+    const av = a[pitchSortCol], bv = b[pitchSortCol];
+    // Nulls always sort to bottom regardless of direction
+    if (av === null || av === undefined) return 1;
+    if (bv === null || bv === undefined) return -1;
+    return pitchSortDir === 'asc' ? av - bv : bv - av;
+  });
+
+  const head = document.getElementById('pitchHead');
+  head.innerHTML = '<tr>' + cols.map(c => {
+    const isSort = c.key === pitchSortCol;
+    const arrow  = isSort ? (pitchSortDir === 'asc' ? ' ↑' : ' ↓') : '';
+    const adv    = c.adv ? '<span class="adv-badge">adv</span>' : '';
+    return `<th class="${c.left?'left':''} ${isSort?'active-sort':''}"
+      onclick="sortPitch('${c.key}')">${c.label}${adv}${isSort?arrow:''}</th>`;
+  }).join('') + '</tr>';
+
+  const body = document.getElementById('pitchBody');
+  body.innerHTML = data.map((p, i) => {
+    const rank = i + 1;
+    const rClass = rank===1?'r1':rank===2?'r2':rank===3?'r3':'';
+    return '<tr>' + cols.map(c => {
+      if (c.key === 'rank') return `<td class="rank-col left ${rClass}">${rank}</td>`;
+      const v = p[c.key];
+      const f = fmt(v, c.fmt, c.key, data);
+      const left = c.fmt === 'name' || c.fmt === 'team' ? ' left' : '';
+      const nameClass = c.fmt === 'name' ? ' player-col' : '';
+      const teamClass = c.fmt === 'team' ? ' team-col' : '';
+      return `<td class="${left}${nameClass}${teamClass}">${f}</td>`;
+    }).join('') + '</tr>';
+  }).join('');
+}
+
+function sortHit(key) {
+  if (key === 'rank' || key === 'name' || key === 'team') return;
+  if (hitSortCol === key) {
+    hitSortDir = hitSortDir === 'desc' ? 'asc' : 'desc';
+  } else {
+    hitSortCol = key;
+    hitSortDir = 'desc';
+  }
+  renderHitTable();
+}
+
+function sortPitch(key) {
+  if (key === 'rank' || key === 'name' || key === 'team') return;
+  const lowGoodPitch = ['era','fip','xfip','whip','bb9','hr9','h9'];
+  const defaultAsc = lowGoodPitch.includes(key);
+  if (pitchSortCol === key) {
+    pitchSortDir = pitchSortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    pitchSortCol = key;
+    pitchSortDir = defaultAsc ? 'asc' : 'desc';
+  }
+  renderPitchTable();
+}
+
+function setHitView(view, btn) {
+  hitView = view;
+  document.querySelectorAll('#hitting .stat-cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderHitTable();
+}
+
+function setPitchView(view, btn) {
+  pitchView = view;
+  document.querySelectorAll('#pitching .stat-cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPitchTable();
+}
+
+function showStatsPanel(id, btn) {
+  document.querySelectorAll('.stats-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.stats-subtab').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SCORES RENDER
+// ═══════════════════════════════════════════════════════════════
+const DATE_LABELS = {
+  apr26:'Sunday, April 26', apr25:'Saturday, April 25',
+  apr11:'Saturday, April 11', apr9:'Thursday, April 9', apr7:'Tuesday, April 7', apr4:'Saturday, April 4', apr2:'Thursday, April 2', mar31:'Tuesday, March 31', mar28:'Saturday, March 28', mar26:'Thursday, March 26',
+  apr19:'Saturday, April 19', apr17:'Thursday, April 17',
+  apr15:'Tuesday, April 15', apr12:'Saturday, April 12',
+};
+const UPCOMING_DATES = ['apr7','apr9','apr11'];
+
+function showDate(dateKey, btn) {
+  document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentDate = dateKey;
+  renderGames(dateKey);
+}
+
+function renderGames(dateKey) {
+  const panel = document.getElementById('gamesPanel');
+  const games = GAMES_BY_DATE[dateKey] || [];
+  const upcoming = UPCOMING_DATES.includes(dateKey);
+
+  const filtered = games.filter(g => currentLeague === 'all' || TEAMS[g.home].league === currentLeague);
+  if (!filtered.length) {
+    panel.innerHTML = `<div style="color:var(--muted);padding:40px 0;text-align:center;">No games for this league on this date.</div>`;
+    return;
+  }
+
+  let html = `<div class="date-heading">${DATE_LABELS[dateKey]||dateKey}</div>`;
+  filtered.forEach(g => {
+    const home = TEAMS[g.home], away = TEAMS[g.away];
+    const isFinal = g.homeScore !== null && !upcoming;
+    const homeWins = isFinal && g.homeScore > g.awayScore;
+    const awayWins = isFinal && g.awayScore > g.homeScore;
+    const league = home.league;
+    const mpLink = `https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--${league}/?leagueid=${league==='mountain'?'997fc154-7b9c-4f2c-b22f-242464a7c81c':league==='sunset'?'fb2b85ea-c8d0-4acf-873c-3296a5780eff':'692cdcda-f9c9-46d2-a584-e075f5b97c75'}`;
+    html += `
+    <a class="game-card ${isFinal?'final':''}" href="${mpLink}" target="_blank">
+      <div class="game-league-dot ${league}"></div>
+      <div class="game-teams">
+        <div class="game-team-row">
+          <div class="team-abbr" style="background:${TEAM_COLORS[league]}">${away.short}</div>
+          <div class="game-team-name ${awayWins?'winner':isFinal?'loser':''}">${away.name}</div>
+        </div>
+        <div class="game-team-row">
+          <div class="team-abbr" style="background:${TEAM_COLORS[league]}">${home.short}</div>
+          <div class="game-team-name ${homeWins?'winner':isFinal?'loser':''}">${home.name} <span style="font-size:.62rem;color:var(--muted)">HOME</span></div>
+        </div>
+      </div>
+      <div class="game-right">
+        <div class="game-scores">
+          ${isFinal
+            ? `<div class="game-score ${awayWins?'winner':'loser'}">${g.awayScore}</div><div class="game-score ${homeWins?'winner':'loser'}">${g.homeScore}</div>`
+            : `<div class="game-score tbd">${g.time||'TBD'}</div><div class="game-score tbd">vs.</div>`}
+        </div>
+        <div class="game-meta">
+          <div class="game-status ${isFinal?'final':'upcoming'}">${isFinal?'Final':'Upcoming'}</div>
+          <div class="game-league-tag">${league.charAt(0).toUpperCase()+league.slice(1)}</div>
+          ${g.confirmed&&isFinal?'<div style="font-size:.6rem;color:var(--green)">✓ verified</div>':''}
+        </div>
+      </div>
+    </a>`;
+  });
+  panel.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  TEAMS RENDER
+// ═══════════════════════════════════════════════════════════════
+function renderTeams() {
+  ['mountain','sunset','ocean'].forEach(league => {
+    const el = document.getElementById('teams-'+league);
+    if (!el) return;
+    el.innerHTML = Object.entries(TEAMS)
+      .filter(([,t]) => t.league === league)
+      .map(([,t]) => `
+        <a class="team-card" href="${t.url}" target="_blank">
+          <div class="team-icon ${league}">${t.short}</div>
+          <div class="team-card-info">
+            <div class="team-card-name">${t.name}</div>
+            <div class="team-card-sub">${t.city}, CA · CCAA ${league.charAt(0).toUpperCase()+league.slice(1)}</div>
+          </div>
+
+        </a>`).join('');
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  NAV + LEAGUE FILTER
+// ═══════════════════════════════════════════════════════════════
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const map = {scores:0, standings:1, stats:2, teams:3};
+  document.querySelectorAll('nav button')[map[id]].classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if (id === 'teams') renderTeams();
+}
+
+function filterLeague(league, btn) {
+  currentLeague = league;
+  document.querySelectorAll('.lpill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  // standings
+  document.querySelectorAll('.league-block').forEach(b => {
+    b.style.display = (league === 'all' || b.dataset.league === league) ? '' : 'none';
+  });
+  // scores
+  renderGames(currentDate);
+  // stats
+  renderHitTable();
+  renderPitchTable();
+}
+
+function toggleGlossary() {
+  const body = document.getElementById('glossBody');
+  const arrow = document.getElementById('glossArrow');
+  const open = body.classList.toggle('open');
+  arrow.textContent = open ? '▲' : '▼';
+}
+
+// ═══ INIT ═══
+renderGames('apr2');
+renderHitTable();
+renderPitchTable();
+renderTeams();
+</script>
+</body>
+</html>

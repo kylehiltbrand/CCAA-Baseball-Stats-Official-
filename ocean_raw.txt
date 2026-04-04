@@ -1,0 +1,190 @@
+=== OCEAN BA PAGE (name|team|pa|h|ab|2b|3b|hr) ===
+Beau Hageman|Nipomo|53|24|43|1|0|0
+Jaxon Glover|Santa Ynez|58|26|53|4|2|2
+Ivan Enriquez|PVHS|44|16|33|1|0|1
+Kyle Heiduk|Santa Ynez|61|22|49|3|1|0
+Kyle Milner|PVHS|36|13|29|4|0|0
+Josh Calderon|Santa Maria|42|16|37|0|0|0
+Tristin Jeckell|Santa Ynez|45|18|42|5|0|0
+Elijah Roberts|Santa Ynez|45|15|35|6|0|0
+Bryce Alejo|Santa Maria|42|16|38|3|0|0
+Diego Pulido|Santa Ynez|58|17|42|5|0|1
+David Aquistapace|Santa Ynez|57|16|42|6|1|0
+Eli Silveira|Nipomo|50|15|40|2|0|0
+Brady Cram|Santa Ynez|49|15|40|0|0|0
+Julius Medina|Santa Maria|43|12|32|1|0|0
+Logan Hobbs|Nipomo|53|15|43|1|0|0
+Griffin Groshart|Nipomo|53|16|48|7|0|0
+Dominic Martin|Santa Maria|43|11|34|3|0|0
+Chase Moulden|Nipomo|48|14|44|4|0|0
+David Cortez|PVHS|51|13|41|6|0|0
+Andrew Rice|Santa Maria|40|11|36|0|0|0
+Mike Rosas|PVHS|35|8|28|1|0|0
+Sam Rhea|Santa Ynez|50|11|39|1|0|0
+Alex Ybarra|Santa Maria|40|9|32|2|0|0
+Ethan Silveira|Nipomo|38|10|36|1|0|0
+Mason Skidmore|Santa Ynez|58|14|51|4|0|0
+Luke Hobbs|Nipomo|43|9|35|2|0|0
+Eddie Ponce|PVHS|52|10|41|0|1|0
+Adrian Rice|Santa Maria|28|6|25|2|0|0
+Jordan Medina|Santa Maria|38|8|34|1|0|0
+Uriah Ponce|PVHS|35|7|32|1|0|0
+Caden Palmer|Santa Ynez|17|2|10|0|0|0
+Kai Simonson|Nipomo|16|3|15|0|0|0
+Travis Barr|Nipomo|28|5|26|0|0|0
+Kamron Owen|PVHS|34|5|29|0|0|0
+Trevor Oxley|Nipomo|34|4|25|1|0|0
+Uriyah Rodriguez|Santa Maria|33|4|25|0|0|0
+Jonah Lopez|PVHS|42|6|39|0|1|0
+Mark Andrade|PVHS|30|2|21|0|0|0
+
+=== OCEAN OBP PAGE (name|team|bb|sf|hbp) ===
+Beau Hageman|Nipomo|4|1|2
+Ivan Enriquez|PVHS|7|1|3
+Kyle Heiduk|Santa Ynez|11|0|1
+Kyle Milner|PVHS|6|0|1
+Diego Pulido|Santa Ynez|11|1|4
+David Aquistapace|Santa Ynez|11|0|4
+Julius Medina|Santa Maria|11|0|0
+Elijah Roberts|Santa Ynez|7|1|2
+Caden Palmer|Santa Ynez|5|0|2
+Jaxon Glover|Santa Ynez|3|1|1
+Eli Silveira|Nipomo|6|0|4
+Brady Cram|Santa Ynez|7|0|1
+Bryce Alejo|Santa Maria|0|0|4
+Tristin Jeckell|Santa Ynez|3|0|0
+Dominic Martin|Santa Maria|7|0|2
+Josh Calderon|Santa Maria|2|1|1
+Logan Hobbs|Nipomo|3|1|6
+David Cortez|PVHS|10|0|0
+Alex Ybarra|Santa Maria|7|0|1
+Mike Rosas|PVHS|3|0|3
+Sam Rhea|Santa Ynez|4|1|4
+Eddie Ponce|PVHS|6|0|4
+Trevor Oxley|Nipomo|8|0|1
+Luke Hobbs|Nipomo|6|0|1
+Griffin Groshart|Nipomo|3|1|1
+Chase Moulden|Nipomo|3|0|1
+Andrew Rice|Santa Maria|2|0|2
+Uriyah Rodriguez|Santa Maria|6|0|2
+Mason Skidmore|Santa Ynez|5|0|1
+Mark Andrade|PVHS|7|0|0
+Adrian Rice|Santa Maria|3|0|0
+Jordan Medina|Santa Maria|4|0|0
+Ethan Silveira|Nipomo|1|1|0
+Uriah Ponce|PVHS|1|0|1
+Kamron Owen|PVHS|2|1|2
+Travis Barr|Nipomo|0|1|1
+Jonah Lopez|PVHS|1|0|1
+Kai Simonson|Nipomo|0|1|0
+
+=== OCEAN RBI PAGE (name|team|rbi) ===
+Jaxon Glover|Santa Ynez|25
+Griffin Groshart|Nipomo|23
+Tristin Jeckell|Santa Ynez|15
+Diego Pulido|Santa Ynez|14
+Ivan Enriquez|PVHS|14
+Kyle Heiduk|Santa Ynez|13
+David Aquistapace|Santa Ynez|13
+Eli Silveira|Nipomo|12
+Chase Moulden|Nipomo|12
+Bryce Alejo|Santa Maria|11
+Mason Skidmore|Santa Ynez|10
+Elijah Roberts|Santa Ynez|10
+Kyle Milner|PVHS|10
+Andrew Rice|Santa Maria|9
+Sam Rhea|Santa Ynez|8
+Beau Hageman|Nipomo|7
+David Cortez|PVHS|7
+Adrian Rice|Santa Maria|7
+Luke Hobbs|Nipomo|7
+
+=== OCEAN RUNS PAGE (name|team|r) ===
+Kyle Heiduk|Santa Ynez|22
+Logan Hobbs|Nipomo|21
+Jaxon Glover|Santa Ynez|19
+Diego Pulido|Santa Ynez|19
+Mason Skidmore|Santa Ynez|18
+Beau Hageman|Nipomo|16
+Eddie Ponce|PVHS|16
+David Aquistapace|Santa Ynez|15
+Tristin Jeckell|Santa Ynez|15
+Brady Cram|Santa Ynez|14
+Julius Medina|Santa Maria|13
+David Cortez|PVHS|12
+Sam Rhea|Santa Ynez|12
+Dominic Martin|Santa Maria|12
+Elijah Roberts|Santa Ynez|11
+Ivan Enriquez|PVHS|10
+Uriyah Rodriguez|Santa Maria|9
+Chase Moulden|Nipomo|8
+
+=== OCEAN SB PAGE (name|team|sb|sba) ===
+Mason Skidmore|Santa Ynez|13|15
+David Cortez|PVHS|10|20
+Eddie Ponce|PVHS|10|20
+Logan Hobbs|Nipomo|9|9
+Beau Hageman|Nipomo|9|9
+Kyle Heiduk|Santa Ynez|8|9
+Elijah Roberts|Santa Ynez|8|11
+Diego Pulido|Santa Ynez|8|9
+Brady Cram|Santa Ynez|7|8
+Jaxon Glover|Santa Ynez|7|9
+Dominic Martin|Santa Maria|7|7
+David Aquistapace|Santa Ynez|5|6
+Chase Moulden|Nipomo|5|5
+Tristin Jeckell|Santa Ynez|5|5
+Jonah Lopez|PVHS|5|10
+Julius Medina|Santa Maria|4|4
+Sam Rhea|Santa Ynez|3|4
+Eli Silveira|Nipomo|3|5
+Mike Rosas|PVHS|3|4
+Ivan Enriquez|PVHS|3|3
+
+=== OCEAN ERA PAGE (name|team|era|ip|er|r|bf) ===
+Izaiah Garcia|PVHS|0.54|13.0|1|2|49
+Bryce Alejo|Santa Maria|0.88|8.0|1|1|29
+Kamron Owen|PVHS|1.27|11.0|2|7|54
+Julian Valdez|PVHS|1.34|15.2|3|7|68
+Elijah Roberts|Santa Ynez|1.68|16.2|4|4|68
+Caden Palmer|Santa Ynez|1.71|16.1|4|5|64
+Tristin Jeckell|Santa Ynez|2.68|31.1|12|20|139
+Eli Silveira|Nipomo|2.78|27.2|11|13|126
+Jacob Beltran|PVHS|3.24|19.1|7|9|83
+Jordan Medina|Santa Maria|3.00|12.0|4|5|60
+Julius Medina|Santa Maria|3.43|18.1|7|11|105
+Dominic Martin|Santa Maria|3.47|23.1|9|11|110
+Ethan Silveira|Nipomo|4.43|20.1|10|13|108
+Griffin Groshart|Nipomo|4.97|27.2|15|126
+
+=== OCEAN K PAGE (name|team|k|bf|ip) ===
+Tristin Jeckell|Santa Ynez|53|139|31.1
+Julius Medina|Santa Maria|31|105|18.1
+Eli Silveira|Nipomo|30|126|27.2
+Dominic Martin|Santa Maria|30|110|23.1
+Ethan Silveira|Nipomo|25|108|20.1
+Elijah Roberts|Santa Ynez|24|68|16.2
+Caden Palmer|Santa Ynez|22|64|16.1
+Julian Valdez|PVHS|16|68|15.2
+Jordan Medina|Santa Maria|15|60|12.0
+Jaxon Glover|Santa Ynez|14|28|7.1
+Jacob Beltran|PVHS|14|83|19.1
+Izaiah Garcia|PVHS|10|49|13.0
+Kamron Owen|PVHS|10|54|11.0
+Bryce Alejo|Santa Maria|7|29|8.0
+
+=== OCEAN W PAGE (name|team|w|l) ===
+Eli Silveira|Nipomo|5|1
+Caden Palmer|Santa Ynez|3|0
+Elijah Roberts|Santa Ynez|2|0
+Julian Valdez|PVHS|2|0
+Izaiah Garcia|PVHS|2|0
+Jacob Beltran|PVHS|2|1
+Ethan Silveira|Nipomo|2|1
+Tristin Jeckell|Santa Ynez|2|2
+Kamron Owen|PVHS|1|0
+David Cortez|PVHS|1|0
+Dominic Martin|Santa Maria|1|2
+Julius Medina|Santa Maria|1|3
+Jordan Medina|Santa Maria|1|1
+Griffin Groshart|Nipomo|0|3

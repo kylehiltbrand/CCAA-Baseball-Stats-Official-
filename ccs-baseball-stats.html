@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCS Baseball Stats | Central Coast Section</title>
+  <style>
+    :root {
+      --navy: #0a1628;
+      --navy-mid: #112240;
+      --navy-light: #1a3155;
+      --gold: #f0a500;
+      --gold-light: #f5c040;
+      --red: #c0392b;
+      --green: #27ae60;
+      --text: #e8edf5;
+      --text-muted: #8a9ab5;
+      --border: #2a3f5f;
+      --card-bg: #112240;
+      --table-alt: #0d1d35;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--navy);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, #060e1e 0%, var(--navy-mid) 60%, #0f2a50 100%);
+      border-bottom: 3px solid var(--gold);
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 14px 0 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    .logo-icon {
+      width: 52px;
+      height: 52px;
+    }
+
+    .site-name {
+      line-height: 1.1;
+    }
+
+    .site-name h1 {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    .site-name span {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    nav {
+      display: flex;
+      gap: 2px;
+      margin-left: auto;
+      align-self: flex-end;
+    }
+
+    nav button {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 10px 18px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    nav button:hover { color: var(--text); }
+
+    nav button.active {
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+    }
+
+    .season-badge {
+      margin-left: 16px;
+      background: var(--gold);
+      color: var(--navy);
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      white-space: nowrap;
+      align-self: center;
+      margin-bottom: 8px;
+    }
+
+    /* ── HERO BAND ── */
+    .hero-band {
+      background: linear-gradient(90deg, var(--navy-mid), #0d2244, var(--navy-mid));
+      border-bottom: 1px solid var(--border);
+      padding: 10px 24px;
+    }
+
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      overflow-x: auto;
+    }
+
+    .quick-link {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--navy-light);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .quick-link:hover {
+      background: var(--gold);
+      color: var(--navy);
+      border-color: var(--gold);
+    }
+
+    .quick-link svg { width: 14px; height: 14px; }
+
+    /* ── MAIN CONTENT ── */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 24px 60px;
+    }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 24px;
+      background: var(--gold);
+      border-radius: 2px;
+    }
+
+    .maxpreps-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--gold);
+      color: var(--navy);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .maxpreps-btn:hover { background: var(--gold-light); }
+
+    /* ── STAT GRID (batting/pitching) ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .stat-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 16px;
+      background: var(--navy-light);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stat-card-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--gold);
+    }
+
+    .stat-card-link {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-card-link:hover { color: var(--gold); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+
+    thead th {
+      padding: 8px 10px;
+      text-align: left;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    thead th.right { text-align: right; }
+    thead th.num { text-align: center; width: 30px; }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(42,63,95,0.4);
+      transition: background 0.15s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(240,165,0,0.06); }
+
+    tbody tr:nth-child(odd) { background: rgba(10,22,40,0.4); }
+    tbody tr:nth-child(odd):hover { background: rgba(240,165,0,0.06); }
+
+    td {
+      padding: 9px 10px;
+      vertical-align: middle;
+    }
+
+    td.rank {
+      width: 28px;
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    td.rank.gold { color: var(--gold); font-size: 0.85rem; }
+    td.rank.silver { color: #b0b8c8; }
+    td.rank.bronze { color: #c87941; }
+
+    td.player-name {
+      font-weight: 700;
+      color: #fff;
+    }
+
+    td.team-name {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    td.stat-val {
+      text-align: right;
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--gold-light);
+      letter-spacing: -0.5px;
+    }
+
+    /* ── RANKINGS TABLE ── */
+    .rankings-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 800px) {
+      .rankings-wrap { grid-template-columns: 1fr; }
+      nav button { padding: 10px 12px; font-size: 0.78rem; }
+      .season-badge { display: none; }
+      .stat-grid { grid-template-columns: 1fr; }
+    }
+
+    .league-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .league-card-header {
+      padding: 12px 16px;
+      background: var(--navy-light);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .league-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .league-abbr {
+      font-size: 0.7rem;
+      color: var(--gold);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .standings-table td { padding: 8px 12px; }
+
+    .standings-table td.team-col {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .standings-table td.w { text-align: center; font-weight: 700; color: var(--green); }
+    .standings-table td.l { text-align: center; font-weight: 700; color: #e74c3c; }
+    .standings-table td.pct { text-align: center; color: var(--text-muted); font-size: 0.82rem; }
+    .standings-table td.gb { text-align: center; color: var(--text-muted); font-size: 0.8rem; }
+
+    .standings-table thead th { text-align: center; }
+    .standings-table thead th:first-child { text-align: left; }
+
+    /* ── SCORES ── */
+    .scores-wrap {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .date-group { }
+
+    .date-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--gold);
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .games-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .game-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      transition: border-color 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+    }
+
+    .game-card:hover { border-color: var(--gold); }
+
+    .game-status {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .game-status.final { color: var(--text-muted); }
+    .game-status.live { color: #e74c3c; }
+
+    .game-teams {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .game-team {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .game-team-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .game-team-name.winner { color: #fff; font-weight: 800; }
+
+    .game-score {
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .game-score.winner { color: var(--gold-light); }
+    .game-score.loser { color: var(--text-muted); }
+
+    .game-league-tag {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* ── TOP SECTION HERO ── */
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 700px) {
+      .hero-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .hero-stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+      transition: all 0.2s;
+    }
+
+    .hero-stat-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-2px);
+    }
+
+    .hero-stat-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .hero-stat-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+
+    .hero-stat-team {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .hero-stat-val {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: -1px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy-mid);
+      border-top: 1px solid var(--border);
+      padding: 20px 24px;
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    footer a { color: var(--gold); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── RANKINGS PAGE HEADER ── */
+    .page-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .page-desc a { color: var(--gold); text-decoration: none; }
+    .page-desc a:hover { text-decoration: underline; }
+
+    .divider-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--gold);
+      font-weight: 700;
+      margin: 28px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .divider-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .prototype-notice {
+      background: rgba(240,165,0,0.08);
+      border: 1px solid rgba(240,165,0,0.3);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 0.82rem;
+      color: var(--gold-light);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <!-- Baseball SVG icon -->
+      <svg class="logo-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="26" cy="26" r="24" fill="#0a1628" stroke="#f0a500" stroke-width="2.5"/>
+        <circle cx="26" cy="26" r="18" fill="none" stroke="#1a3155" stroke-width="1"/>
+        <!-- Laces left -->
+        <path d="M16 18 C13 21, 13 31, 16 34" stroke="#f0a500" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <path d="M14.5 20 L17.5 21" stroke="#f0a500" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M13.8 24 L17 24.5" stroke="#f0a500" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M13.8 28 L17 27.5" stroke="#f0a500" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M14.5 32 L17.5 31" stroke="#f0a500" stroke-width="1.3" stroke-linecap="round"/>
+        <!-- Laces right -->
+        <path d="M36 18 C39 21, 39 31, 36 34" stroke="#f0a500" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <path d="M37.5 20 L34.5 21" stroke="#f0a500" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M38.2 24 L35 24.5" stroke="#f0a500" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M38.2 28 L35 27.5" stroke="#f0a500" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M37.5 32 L34.5 31" stroke="#f0a500" stroke-width="1.3" stroke-linecap="round"/>
+        <!-- CCS text -->
+        <text x="26" y="30" text-anchor="middle" fill="#f0a500" font-size="9" font-weight="800" font-family="'Segoe UI', sans-serif">CCS</text>
+      </svg>
+      <div class="site-name">
+        <h1>CCS Baseball Stats</h1>
+        <span>Central Coast Section · California</span>
+      </div>
+    </div>
+
+    <div class="season-badge">Spring 2026</div>
+
+    <nav>
+      <button class="active" onclick="showSection('home')">Home</button>
+      <button onclick="showSection('batting')">Batting</button>
+      <button onclick="showSection('pitching')">Pitching</button>
+      <button onclick="showSection('standings')">Standings</button>
+      <button onclick="showSection('scores')">Scores</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ═══════════════ QUICK LINKS BAND ═══════════════ -->
+<div class="hero-band">
+  <div class="hero-inner">
+    <a class="quick-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/" target="_blank">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 1.5a5.5 5.5 0 110 11 5.5 5.5 0 010-11zm.75 2.5v3.19l2.28 2.28-1.06 1.06L7.5 8.56V5h1.25z"/></svg>
+      CCS Rankings
+    </a>
+    <a class="quick-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/batting-average/ba/" target="_blank">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 11h12v1.5H2zm2-4h8v1.5H4zm2-4h4v1.5H6z"/></svg>
+      Batting AVG
+    </a>
+    <a class="quick-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/on-base-percentage/obp/" target="_blank">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 11h12v1.5H2zm2-4h8v1.5H4zm2-4h4v1.5H6z"/></svg>
+      OBP Leaders
+    </a>
+    <a class="quick-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/slugging/slg/" target="_blank">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 11h12v1.5H2zm2-4h8v1.5H4zm2-4h4v1.5H6z"/></svg>
+      SLG Leaders
+    </a>
+    <a class="quick-link" href="https://www.maxpreps.com/ca/association/cif-central-coast-section/baseball/stat-leaders/home-runs/hr/" target="_blank">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 2l1.8 3.6L14 6.4l-3 2.9.7 4.1L8 11.3l-3.7 1.9.7-4.1L2 6.4l4.2-.8z"/></svg>
+      HR Leaders
+    </a>
+    <a class="quick-link" href="https://www.maxpreps.com/ca/association/cif-central-coast-section/baseball/stat-leaders/stolen-base/sb/" target="_blank">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M10 2a4 4 0 100 8 4 4 0 000-8zM3 7l5 7 2-5-5-7-2 5z"/></svg>
+      SB Leaders
+    </a>
+    <a class="quick-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/strikeouts/k/" target="_blank">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3 2h2l3 5 3-5h2L9 8l4 6H11l-3-4.7L5 14H3l4-6z"/></svg>
+      K Leaders
+    </a>
+    <a class="quick-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/scores/" target="_blank">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1zm1 4v5h2V9h2v2h2V6H9v2H7V6H4z"/></svg>
+      Scoreboard
+    </a>
+  </div>
+</div>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<main>
+
+  <!-- ────── HOME ────── -->
+  <div id="home" class="section active">
+
+    <div class="prototype-notice">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><path d="M9 1.5a7.5 7.5 0 100 15A7.5 7.5 0 009 1.5zm.75 10.5h-1.5v-5h1.5v5zm0-6.5h-1.5V4h1.5v1.5z"/></svg>
+      <span><strong>Prototype:</strong> Sample data shown for design purposes. All "View Full Leaderboard" links go to live MaxPreps pages for real 2026 stats.</span>
+    </div>
+
+    <!-- Stat highlight cards -->
+    <div class="divider-label">Stat Leaders Spotlight</div>
+    <div class="hero-stats">
+      <a class="hero-stat-card" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/batting-average/ba/" target="_blank">
+        <div class="hero-stat-label">Batting Average</div>
+        <div class="hero-stat-name">Shiva Kumaraguru</div>
+        <div class="hero-stat-team">Monta Vista</div>
+        <div class="hero-stat-val">.487</div>
+      </a>
+      <a class="hero-stat-card" href="https://www.maxpreps.com/ca/association/cif-central-coast-section/baseball/stat-leaders/home-runs/hr/" target="_blank">
+        <div class="hero-stat-label">Home Runs</div>
+        <div class="hero-stat-name">Marcus Delgado</div>
+        <div class="hero-stat-team">Bellarmine</div>
+        <div class="hero-stat-val">8</div>
+      </a>
+      <a class="hero-stat-card" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/era/era/" target="_blank">
+        <div class="hero-stat-label">ERA (Pitching)</div>
+        <div class="hero-stat-name">Tyler Nguyen</div>
+        <div class="hero-stat-team">St. Francis</div>
+        <div class="hero-stat-val">0.62</div>
+      </a>
+      <a class="hero-stat-card" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/strikeouts/k/" target="_blank">
+        <div class="hero-stat-label">Strikeouts</div>
+        <div class="hero-stat-name">Damian Martinez</div>
+        <div class="hero-stat-team">Greenfield</div>
+        <div class="hero-stat-val">67</div>
+      </a>
+    </div>
+
+    <!-- Home page batting preview -->
+    <div class="divider-label">Batting Leaders Preview</div>
+    <div class="stat-grid">
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-title">Batting Average</span>
+          <a class="stat-card-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/batting-average/ba/" target="_blank">Full Leaders ↗</a>
+        </div>
+        <table>
+          <thead><tr><th class="num">#</th><th>Player</th><th>School</th><th class="right">AVG</th></tr></thead>
+          <tbody>
+            <tr><td class="rank gold">①</td><td class="player-name">S. Kumaraguru</td><td class="team-name">Monta Vista</td><td class="stat-val">.487</td></tr>
+            <tr><td class="rank silver">②</td><td class="player-name">A. Woodward</td><td class="team-name">N. Valley Baptist</td><td class="stat-val">.471</td></tr>
+            <tr><td class="rank bronze">③</td><td class="player-name">J. Reyes</td><td class="team-name">Gilroy</td><td class="stat-val">.455</td></tr>
+            <tr><td class="rank">4</td><td class="player-name">M. Okafor</td><td class="team-name">Archbishop Mitty</td><td class="stat-val">.449</td></tr>
+            <tr><td class="rank">5</td><td class="player-name">C. Brennan</td><td class="team-name">Los Gatos</td><td class="stat-val">.443</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-title">RBI</span>
+          <a class="stat-card-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/rbi/rbi/" target="_blank">Full Leaders ↗</a>
+        </div>
+        <table>
+          <thead><tr><th class="num">#</th><th>Player</th><th>School</th><th class="right">RBI</th></tr></thead>
+          <tbody>
+            <tr><td class="rank gold">①</td><td class="player-name">S. Kumaraguru</td><td class="team-name">Monta Vista</td><td class="stat-val">25</td></tr>
+            <tr><td class="rank silver">②</td><td class="player-name">M. Delgado</td><td class="team-name">Bellarmine</td><td class="stat-val">22</td></tr>
+            <tr><td class="rank bronze">③</td><td class="player-name">R. Castillo</td><td class="team-name">Serra</td><td class="stat-val">19</td></tr>
+            <tr><td class="rank">4</td><td class="player-name">K. Walsh</td><td class="team-name">Palo Alto</td><td class="stat-val">18</td></tr>
+            <tr><td class="rank">5</td><td class="player-name">B. Torres</td><td class="team-name">Willow Glen</td><td class="stat-val">17</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-title">ERA</span>
+          <a class="stat-card-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/era/era/" target="_blank">Full Leaders ↗</a>
+        </div>
+        <table>
+          <thead><tr><th class="num">#</th><th>Player</th><th>School</th><th class="right">ERA</th></tr></thead>
+          <tbody>
+            <tr><td class="rank gold">①</td><td class="player-name">T. Nguyen</td><td class="team-name">St. Francis</td><td class="stat-val">0.62</td></tr>
+            <tr><td class="rank silver">②</td><td class="player-name">A. Park</td><td class="team-name">Lynbrook</td><td class="stat-val">0.78</td></tr>
+            <tr><td class="rank bronze">③</td><td class="player-name">E. Morales</td><td class="team-name">Watsonville</td><td class="stat-val">1.03</td></tr>
+            <tr><td class="rank">4</td><td class="player-name">J. McCormick</td><td class="team-name">Monte Vista Chr.</td><td class="stat-val">1.18</td></tr>
+            <tr><td class="rank">5</td><td class="player-name">L. Sandoval</td><td class="team-name">Salinas</td><td class="stat-val">1.24</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-title">Strikeouts (K)</span>
+          <a class="stat-card-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/strikeouts/k/" target="_blank">Full Leaders ↗</a>
+        </div>
+        <table>
+          <thead><tr><th class="num">#</th><th>Player</th><th>School</th><th class="right">K</th></tr></thead>
+          <tbody>
+            <tr><td class="rank gold">①</td><td class="player-name">D. Martinez</td><td class="team-name">Greenfield</td><td class="stat-val">67</td></tr>
+            <tr><td class="rank silver">②</td><td class="player-name">T. Nguyen</td><td class="team-name">St. Francis</td><td class="stat-val">61</td></tr>
+            <tr><td class="rank bronze">③</td><td class="player-name">A. Park</td><td class="team-name">Lynbrook</td><td class="stat-val">54</td></tr>
+            <tr><td class="rank">4</td><td class="player-name">N. Chen</td><td class="team-name">Homestead</td><td class="stat-val">49</td></tr>
+            <tr><td class="rank">5</td><td class="player-name">O. Kim</td><td class="team-name">Cupertino</td><td class="stat-val">46</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ────── BATTING ────── -->
+  <div id="batting" class="section">
+    <div class="section-header">
+      <div class="section-title">Batting Leaders</div>
+      <a class="maxpreps-btn" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/batting-average/ba/" target="_blank">
+        View All on MaxPreps ↗
+      </a>
+    </div>
+
+    <div class="page-desc">
+      Full stat leaderboards are hosted on <a href="https://www.maxpreps.com/ca/central-coast-section/baseball/" target="_blank">MaxPreps</a>. Sample data below reflects the Spring 2026 season format. Click any "Full Leaders" link for live, sortable data.
+    </div>
+
+    <div class="stat-grid">
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-title">Batting Average (AVG)</span>
+          <a class="stat-card-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/batting-average/ba/" target="_blank">Full Leaders ↗</a>
+        </div>
+        <table>
+          <thead><tr><th class="num">#</th><th>Player</th><th>School</th><th class="right">AVG</th></tr></thead>
+          <tbody>
+            <tr><td class="rank gold">①</td><td class="player-name">S. Kumaraguru</td><td class="team-name">Monta Vista</td><td class="stat-val">.487</td></tr>
+            <tr><td class="rank silver">②</td><td class="player-name">A. Woodward</td><td class="team-name">N. Valley Baptist</td><td class="stat-val">.471</td></tr>
+            <tr><td class="rank bronze">③</td><td class="player-name">J. Reyes</td><td class="team-name">Gilroy</td><td class="stat-val">.455</td></tr>
+            <tr><td class="rank">4</td><td class="player-name">M. Okafor</td><td class="team-name">Archbishop Mitty</td><td class="stat-val">.449</td></tr>
+            <tr><td class="rank">5</td><td class="player-name">C. Brennan</td><td class="team-name">Los Gatos</td><td class="stat-val">.443</td></tr>
+            <tr><td class="rank">6</td><td class="player-name">D. Pham</td><td class="team-name">Independence</td><td class="stat-val">.438</td></tr>
+            <tr><td class="rank">7</td><td class="player-name">T. Wilson</td><td class="team-name">Saratoga</td><td class="stat-val">.432</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-title">On-Base Percentage (OBP)</span>
+          <a class="stat-card-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/on-base-percentage/obp/" target="_blank">Full Leaders ↗</a>
+        </div>
+        <table>
+          <thead><tr><th class="num">#</th><th>Player</th><th>School</th><th class="right">OBP</th></tr></thead>
+          <tbody>
+            <tr><td class="rank gold">①</td><td class="player-name">A. Woodward</td><td class="team-name">N. Valley Baptist</td><td class="stat-val">.846</td></tr>
+            <tr><td class="rank silver">②</td><td class="player-name">S. Kumaraguru</td><td class="team-name">Monta Vista</td><td class="stat-val">.601</td></tr>
+            <tr><td class="rank bronze">③</td><td class="player-name">C. Brennan</td><td class="team-name">Los Gatos</td><td class="stat-val">.584</td></tr>
+            <tr><td class="rank">4</td><td class="player-name">K. Walsh</td><td class="team-name">Palo Alto</td><td class="stat-val">.573</td></tr>
+            <tr><td class="rank">5</td><td class="player-name">R. Castillo</td><td class="team-name">Serra</td><td class="stat-val">.561</td></tr>
+            <tr><td class="rank">6</td><td class="player-name">M. Okafor</td><td class="team-name">Archbishop Mitty</td><td class="stat-val">.554</td></tr>
+            <tr><td class="rank">7</td><td class="player-name">J. Reyes</td><td class="team-name">Gilroy</td><td class="stat-val">.548</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-title">Slugging % (SLG)</span>
+          <a class="stat-card-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/slugging/slg/" target="_blank">Full Leaders ↗</a>
+        </div>
+        <table>
+          <thead><tr><th class="num">#</th><th>Player</th><th>School</th><th class="right">SLG</th></tr></thead>
+          <tbody>
+            <tr><td class="rank gold">①</td><td class="player-name">M. Delgado</td><td class="team-name">Bellarmine</td><td class="stat-val">.978</td></tr>
+            <tr><td class="rank silver">②</td><td class="player-name">J. Reyes</td><td class="team-name">Gilroy</td><td class="stat-val">.912</td></tr>
+            <tr><td class="rank bronze">③</td><td class="player-name">S. Kumaraguru</td><td class="team-name">Monta Vista</td><td class="stat-val">.889</td></tr>
+            <tr><td class="rank">4</td><td class="player-name">B. Torres</td><td class="team-name">Willow Glen</td><td class="stat-val">.847</td></tr>
+            <tr><td class="rank">5</td><td class="player-name">R. Castillo</td><td class="team-name">Serra</td><td class="stat-val">.823</td></tr>
+            <tr><td class="rank">6</td><td class="player-name">T. Wilson</td><td class="team-name">Saratoga</td><td class="stat-val">.797</td></tr>
+            <tr><td class="rank">7</td><td class="player-name">C. Brennan</td><td class="team-name">Los Gatos</td><td class="stat-val">.781</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-title">Home Runs (HR)</span>
+          <a class="stat-card-link" href="https://www.maxpreps.com/ca/association/cif-central-coast-section/baseball/stat-leaders/home-runs/hr/" target="_blank">Full Leaders ↗</a>
+        </div>
+        <table>
+          <thead><tr><th class="num">#</th><th>Player</th><th>School</th><th class="right">HR</th></tr></thead>
+          <tbody>
+            <tr><td class="rank gold">①</td><td class="player-name">M. Delgado</td><td class="team-name">Bellarmine</td><td class="stat-val">8</td></tr>
+            <tr><td class="rank silver">②</td><td class="player-name">J. Reyes</td><td class="team-name">Gilroy</td><td class="stat-val">6</td></tr>
+            <tr><td class="rank bronze">③</td><td class="player-name">B. Torres</td><td class="team-name">Willow Glen</td><td class="stat-val">5</td></tr>
+            <tr><td class="rank">4</td><td class="player-name">R. Castillo</td><td class="team-name">Serra</td><td class="stat-val">5</td></tr>
+            <tr><td class="rank">5</td><td class="player-name">D. Pham</td><td class="team-name">Independence</td><td class="stat-val">4</td></tr>
+            <tr><td class="rank">6</td><td class="player-name">K. Walsh</td><td class="team-name">Palo Alto</td><td class="stat-val">4</td></tr>
+            <tr><td class="rank">7</td><td class="player-name">T. Wilson</td><td class="team-name">Saratoga</td><td class="stat-val">4</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-title">RBI</span>
+          <a class="stat-card-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/rbi/rbi/" target="_blank">Full Leaders ↗</a>
+        </div>
+        <table>
+          <thead><tr><th class="num">#</th><th>Player</th><th>School</th><th class="right">RBI</th></tr></thead>
+          <tbody>
+            <tr><td class="rank gold">①</td><td class="player-name">S. Kumaraguru</td><td class="team-name">Monta Vista</td><td class="stat-val">25</td></tr>
+            <tr><td class="rank silver">②</td><td class="player-name">M. Delgado</td><td class="team-name">Bellarmine</td><td class="stat-val">22</td></tr>
+            <tr><td class="rank bronze">③</td><td class="player-name">R. Castillo</td><td class="team-name">Serra</td><td class="stat-val">19</td></tr>
+            <tr><td class="rank">4</td><td class="player-name">K. Walsh</td><td class="team-name">Palo Alto</td><td class="stat-val">18</td></tr>
+            <tr><td class="rank">5</td><td class="player-name">B. Torres</td><td class="team-name">Willow Glen</td><td class="stat-val">17</td></tr>
+            <tr><td class="rank">6</td><td class="player-name">J. Reyes</td><td class="team-name">Gilroy</td><td class="stat-val">16</td></tr>
+            <tr><td class="rank">7</td><td class="player-name">M. Okafor</td><td class="team-name">Archbishop Mitty</td><td class="stat-val">15</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-title">Stolen Bases (SB)</span>
+          <a class="stat-card-link" href="https://www.maxpreps.com/ca/association/cif-central-coast-section/baseball/stat-leaders/stolen-base/sb/" target="_blank">Full Leaders ↗</a>
+        </div>
+        <table>
+          <thead><tr><th class="num">#</th><th>Player</th><th>School</th><th class="right">SB</th></tr></thead>
+          <tbody>
+            <tr><td class="rank gold">①</td><td class="player-name">D. Martinez</td><td class="team-name">Greenfield</td><td class="stat-val">21</td></tr>
+            <tr><td class="rank silver">②</td><td class="player-name">C. Brennan</td><td class="team-name">Los Gatos</td><td class="stat-val">18</td></tr>
+            <tr><td class="rank bronze">③</td><td class="player-name">T. Wilson</td><td class="team-name">Saratoga</td><td class="stat-val">15</td></tr>
+            <tr><td class="rank">4</td><td class="player-name">A. Woodward</td><td class="team-name">N. Valley Baptist</td><td class="stat-val">14</td></tr>
+            <tr><td class="rank">5</td><td class="player-name">D. Pham</td><td class="team-name">Independence</td><td class="stat-val">13</td></tr>
+            <tr><td class="rank">6</td><td class="player-name">M. Okafor</td><td class="team-name">Archbishop Mitty</td><td class="stat-val">12</td></tr>
+            <tr><td class="rank">7</td><td class="player-name">K. Walsh</td><td class="team-name">Palo Alto</td><td class="stat-val">11</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ────── PITCHING ────── -->
+  <div id="pitching" class="section">
+    <div class="section-header">
+      <div class="section-title">Pitching Leaders</div>
+      <a class="maxpreps-btn" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/era/era/" target="_blank">
+        View All on MaxPreps ↗
+      </a>
+    </div>
+
+    <div class="page-desc">
+      Full pitching leaderboards are hosted on <a href="https://www.maxpreps.com/ca/central-coast-section/baseball/" target="_blank">MaxPreps</a>. Click any "Full Leaders" link for live data.
+    </div>
+
+    <div class="stat-grid">
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-title">ERA</span>
+          <a class="stat-card-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/era/era/" target="_blank">Full Leaders ↗</a>
+        </div>
+        <table>
+          <thead><tr><th class="num">#</th><th>Player</th><th>School</th><th class="right">ERA</th></tr></thead>
+          <tbody>
+            <tr><td class="rank gold">①</td><td class="player-name">T. Nguyen</td><td class="team-name">St. Francis</td><td class="stat-val">0.62</td></tr>
+            <tr><td class="rank silver">②</td><td class="player-name">A. Park</td><td class="team-name">Lynbrook</td><td class="stat-val">0.78</td></tr>
+            <tr><td class="rank bronze">③</td><td class="player-name">E. Morales</td><td class="team-name">Watsonville</td><td class="stat-val">1.03</td></tr>
+            <tr><td class="rank">4</td><td class="player-name">J. McCormick</td><td class="team-name">Monte Vista Chr.</td><td class="stat-val">1.18</td></tr>
+            <tr><td class="rank">5</td><td class="player-name">L. Sandoval</td><td class="team-name">Salinas</td><td class="stat-val">1.24</td></tr>
+            <tr><td class="rank">6</td><td class="player-name">P. Hernandez</td><td class="team-name">Palma</td><td class="stat-val">1.31</td></tr>
+            <tr><td class="rank">7</td><td class="player-name">N. Chen</td><td class="team-name">Homestead</td><td class="stat-val">1.45</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-title">Strikeouts (K)</span>
+          <a class="stat-card-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/strikeouts/k/" target="_blank">Full Leaders ↗</a>
+        </div>
+        <table>
+          <thead><tr><th class="num">#</th><th>Player</th><th>School</th><th class="right">K</th></tr></thead>
+          <tbody>
+            <tr><td class="rank gold">①</td><td class="player-name">D. Martinez</td><td class="team-name">Greenfield</td><td class="stat-val">67</td></tr>
+            <tr><td class="rank silver">②</td><td class="player-name">T. Nguyen</td><td class="team-name">St. Francis</td><td class="stat-val">61</td></tr>
+            <tr><td class="rank bronze">③</td><td class="player-name">A. Park</td><td class="team-name">Lynbrook</td><td class="stat-val">54</td></tr>
+            <tr><td class="rank">4</td><td class="player-name">N. Chen</td><td class="team-name">Homestead</td><td class="stat-val">49</td></tr>
+            <tr><td class="rank">5</td><td class="player-name">O. Kim</td><td class="team-name">Cupertino</td><td class="stat-val">46</td></tr>
+            <tr><td class="rank">6</td><td class="player-name">L. Sandoval</td><td class="team-name">Salinas</td><td class="stat-val">43</td></tr>
+            <tr><td class="rank">7</td><td class="player-name">E. Morales</td><td class="team-name">Watsonville</td><td class="stat-val">41</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-title">WHIP</span>
+          <a class="stat-card-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/whip/whip/" target="_blank">Full Leaders ↗</a>
+        </div>
+        <table>
+          <thead><tr><th class="num">#</th><th>Player</th><th>School</th><th class="right">WHIP</th></tr></thead>
+          <tbody>
+            <tr><td class="rank gold">①</td><td class="player-name">T. Nguyen</td><td class="team-name">St. Francis</td><td class="stat-val">0.61</td></tr>
+            <tr><td class="rank silver">②</td><td class="player-name">E. Morales</td><td class="team-name">Watsonville</td><td class="stat-val">0.74</td></tr>
+            <tr><td class="rank bronze">③</td><td class="player-name">A. Park</td><td class="team-name">Lynbrook</td><td class="stat-val">0.83</td></tr>
+            <tr><td class="rank">4</td><td class="player-name">J. McCormick</td><td class="team-name">Monte Vista Chr.</td><td class="stat-val">0.91</td></tr>
+            <tr><td class="rank">5</td><td class="player-name">N. Chen</td><td class="team-name">Homestead</td><td class="stat-val">0.97</td></tr>
+            <tr><td class="rank">6</td><td class="player-name">P. Hernandez</td><td class="team-name">Palma</td><td class="stat-val">1.02</td></tr>
+            <tr><td class="rank">7</td><td class="player-name">O. Kim</td><td class="team-name">Cupertino</td><td class="stat-val">1.09</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-title">Wins (W)</span>
+          <a class="stat-card-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/wins/w/" target="_blank">Full Leaders ↗</a>
+        </div>
+        <table>
+          <thead><tr><th class="num">#</th><th>Player</th><th>School</th><th class="right">W</th></tr></thead>
+          <tbody>
+            <tr><td class="rank gold">①</td><td class="player-name">T. Nguyen</td><td class="team-name">St. Francis</td><td class="stat-val">8</td></tr>
+            <tr><td class="rank silver">②</td><td class="player-name">D. Martinez</td><td class="team-name">Greenfield</td><td class="stat-val">7</td></tr>
+            <tr><td class="rank bronze">③</td><td class="player-name">L. Sandoval</td><td class="team-name">Salinas</td><td class="stat-val">7</td></tr>
+            <tr><td class="rank">4</td><td class="player-name">A. Park</td><td class="team-name">Lynbrook</td><td class="stat-val">6</td></tr>
+            <tr><td class="rank">5</td><td class="player-name">N. Chen</td><td class="team-name">Homestead</td><td class="stat-val">6</td></tr>
+            <tr><td class="rank">6</td><td class="player-name">E. Morales</td><td class="team-name">Watsonville</td><td class="stat-val">6</td></tr>
+            <tr><td class="rank">7</td><td class="player-name">O. Kim</td><td class="team-name">Cupertino</td><td class="stat-val">5</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-title">Innings Pitched (IP)</span>
+          <a class="stat-card-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/innings-pitched/ip/" target="_blank">Full Leaders ↗</a>
+        </div>
+        <table>
+          <thead><tr><th class="num">#</th><th>Player</th><th>School</th><th class="right">IP</th></tr></thead>
+          <tbody>
+            <tr><td class="rank gold">①</td><td class="player-name">D. Martinez</td><td class="team-name">Greenfield</td><td class="stat-val">61.1</td></tr>
+            <tr><td class="rank silver">②</td><td class="player-name">T. Nguyen</td><td class="team-name">St. Francis</td><td class="stat-val">58.2</td></tr>
+            <tr><td class="rank bronze">③</td><td class="player-name">L. Sandoval</td><td class="team-name">Salinas</td><td class="stat-val">56.0</td></tr>
+            <tr><td class="rank">4</td><td class="player-name">P. Hernandez</td><td class="team-name">Palma</td><td class="stat-val">52.1</td></tr>
+            <tr><td class="rank">5</td><td class="player-name">A. Park</td><td class="team-name">Lynbrook</td><td class="stat-val">49.2</td></tr>
+            <tr><td class="rank">6</td><td class="player-name">N. Chen</td><td class="team-name">Homestead</td><td class="stat-val">47.0</td></tr>
+            <tr><td class="rank">7</td><td class="player-name">E. Morales</td><td class="team-name">Watsonville</td><td class="stat-val">44.1</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-title">Batters K'd (Pitcher SO)</span>
+          <a class="stat-card-link" href="https://www.maxpreps.com/ca/central-coast-section/baseball/stat-leaders/strikeouts/k/" target="_blank">Full Leaders ↗</a>
+        </div>
+        <table>
+          <thead><tr><th class="num">#</th><th>Player</th><th>School</th><th class="right">K/9</th></tr></thead>
+          <tbody>
+            <tr><td class="rank gold">①</td><td class="player-name">D. Martinez</td><td class="team-name">Greenfield</td><td class="stat-val">9.83</td></tr>
+            <tr><td class="rank silver">②</td><td class="player-name">O. Kim</td><td class="team-name">Cupertino</td><td class="stat-val">9.44</td></tr>
+            <tr><td class="rank bronze">③</td><td class="player-name">T. Nguyen</td><td class="team-name">St. Francis</td><td class="stat-val">9.35</td></tr>
+            <tr><td class="rank">4</td><td class="player-name">A. Park</td><td class="team-name">Lynbrook</td><td class="stat-val">9.79</td></tr>
+            <tr><td class="rank">5</td><td class="player-name">N. Chen</td><td class="team-name">Homestead</td><td class="stat-val">9.38</td></tr>
+            <tr><td class="rank">6</td><td class="player-name">J. McCormick</td><td class="team-name">Monte Vista Chr.</td><td class="stat-val">8.91</td></tr>
+            <tr><td class="rank">7</td><td class="player-name">E. Morales</td><td class="team-name">Watsonville</td><td class="stat-val">8.33</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ────── STANDINGS ────── -->
+  <div id="standings" class="section">
+    <div class="section-header">
+      <div class="section-title">League Standings</div>
+      <a class="maxpreps-btn" href="https://www.maxpreps.com/ca/central-coast-section/baseball/rankings/1/" target="_blank">
+        Full Rankings on MaxPreps ↗
+      </a>
+    </div>
+
+    <div class="page-desc">
+      League records shown for 2026 season (sample data). For full statewide rankings visit <a href="https://www.maxpreps.com/ca/central-coast-section/baseball/rankings/1/" target="_blank">MaxPreps CCS Rankings</a>. Official standings are maintained by <a href="https://cifccs.org/sports/bsb/index" target="_blank">CIF-CCS</a>.
+    </div>
+
+    <div class="rankings-wrap">
+
+      <!-- SCVAL De Anza -->
+      <div class="league-card">
+        <div class="league-card-header">
+          <span class="league-name">Santa Clara Valley Athletic League</span>
+          <span class="league-abbr">SCVAL · De Anza</span>
+        </div>
+        <table class="standings-table">
+          <thead><tr><th>Team</th><th>W</th><th>L</th><th>PCT</th><th>GB</th></tr></thead>
+          <tbody>
+            <tr><td class="team-col">Monta Vista</td><td class="w">10</td><td class="l">2</td><td class="pct">.833</td><td class="gb">—</td></tr>
+            <tr><td class="team-col">Palo Alto</td><td class="w">9</td><td class="l">3</td><td class="pct">.750</td><td class="gb">1</td></tr>
+            <tr><td class="team-col">Lynbrook</td><td class="w">8</td><td class="l">4</td><td class="pct">.667</td><td class="gb">2</td></tr>
+            <tr><td class="team-col">Homestead</td><td class="w">6</td><td class="l">6</td><td class="pct">.500</td><td class="gb">4</td></tr>
+            <tr><td class="team-col">Cupertino</td><td class="w">4</td><td class="l">8</td><td class="pct">.333</td><td class="gb">6</td></tr>
+            <tr><td class="team-col">Fremont</td><td class="w">1</td><td class="l">11</td><td class="pct">.083</td><td class="gb">9</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- WCAL -->
+      <div class="league-card">
+        <div class="league-card-header">
+          <span class="league-name">West Catholic Athletic League</span>
+          <span class="league-abbr">WCAL</span>
+        </div>
+        <table class="standings-table">
+          <thead><tr><th>Team</th><th>W</th><th>L</th><th>PCT</th><th>GB</th></tr></thead>
+          <tbody>
+            <tr><td class="team-col">Archbishop Mitty</td><td class="w">11</td><td class="l">1</td><td class="pct">.917</td><td class="gb">—</td></tr>
+            <tr><td class="team-col">St. Francis</td><td class="w">9</td><td class="l">3</td><td class="pct">.750</td><td class="gb">2</td></tr>
+            <tr><td class="team-col">Bellarmine</td><td class="w">8</td><td class="l">4</td><td class="pct">.667</td><td class="gb">3</td></tr>
+            <tr><td class="team-col">Serra</td><td class="w">7</td><td class="l">5</td><td class="pct">.583</td><td class="gb">4</td></tr>
+            <tr><td class="team-col">Sacred Heart Prep</td><td class="w">5</td><td class="l">7</td><td class="pct">.417</td><td class="gb">6</td></tr>
+            <tr><td class="team-col">Valley Christian</td><td class="w">2</td><td class="l">10</td><td class="pct">.167</td><td class="gb">9</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- SCVAL El Camino -->
+      <div class="league-card">
+        <div class="league-card-header">
+          <span class="league-name">Santa Clara Valley Athletic League</span>
+          <span class="league-abbr">SCVAL · El Camino</span>
+        </div>
+        <table class="standings-table">
+          <thead><tr><th>Team</th><th>W</th><th>L</th><th>PCT</th><th>GB</th></tr></thead>
+          <tbody>
+            <tr><td class="team-col">Los Gatos</td><td class="w">11</td><td class="l">1</td><td class="pct">.917</td><td class="gb">—</td></tr>
+            <tr><td class="team-col">Saratoga</td><td class="w">9</td><td class="l">3</td><td class="pct">.750</td><td class="gb">2</td></tr>
+            <tr><td class="team-col">Mountain View</td><td class="w">7</td><td class="l">5</td><td class="pct">.583</td><td class="gb">4</td></tr>
+            <tr><td class="team-col">Santa Clara</td><td class="w">6</td><td class="l">6</td><td class="pct">.500</td><td class="gb">5</td></tr>
+            <tr><td class="team-col">Milpitas</td><td class="w">4</td><td class="l">8</td><td class="pct">.333</td><td class="gb">7</td></tr>
+            <tr><td class="team-col">Gunn</td><td class="w">3</td><td class="l">9</td><td class="pct">.250</td><td class="gb">8</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PCAL -->
+      <div class="league-card">
+        <div class="league-card-header">
+          <span class="league-name">Pacific Coast Athletic League</span>
+          <span class="league-abbr">PCAL · Gabilan</span>
+        </div>
+        <table class="standings-table">
+          <thead><tr><th>Team</th><th>W</th><th>L</th><th>PCT</th><th>GB</th></tr></thead>
+          <tbody>
+            <tr><td class="team-col">Salinas</td><td class="w">10</td><td class="l">2</td><td class="pct">.833</td><td class="gb">—</td></tr>
+            <tr><td class="team-col">Palma</td><td class="w">9</td><td class="l">3</td><td class="pct">.750</td><td class="gb">1</td></tr>
+            <tr><td class="team-col">Gilroy</td><td class="w">8</td><td class="l">4</td><td class="pct">.667</td><td class="gb">2</td></tr>
+            <tr><td class="team-col">King City</td><td class="w">5</td><td class="l">7</td><td class="pct">.417</td><td class="gb">5</td></tr>
+            <tr><td class="team-col">Alisal</td><td class="w">3</td><td class="l">9</td><td class="pct">.250</td><td class="gb">7</td></tr>
+            <tr><td class="team-col">Greenfield</td><td class="w">1</td><td class="l">11</td><td class="pct">.083</td><td class="gb">9</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- SCCAL -->
+      <div class="league-card">
+        <div class="league-card-header">
+          <span class="league-name">Santa Cruz Coast Athletic League</span>
+          <span class="league-abbr">SCCAL</span>
+        </div>
+        <table class="standings-table">
+          <thead><tr><th>Team</th><th>W</th><th>L</th><th>PCT</th><th>GB</th></tr></thead>
+          <tbody>
+            <tr><td class="team-col">Aptos</td><td class="w">10</td><td class="l">2</td><td class="pct">.833</td><td class="gb">—</td></tr>
+            <tr><td class="team-col">Santa Cruz</td><td class="w">9</td><td class="l">3</td><td class="pct">.750</td><td class="gb">1</td></tr>
+            <tr><td class="team-col">Soquel</td><td class="w">7</td><td class="l">5</td><td class="pct">.583</td><td class="gb">3</td></tr>
+            <tr><td class="team-col">Watsonville</td><td class="w">6</td><td class="l">6</td><td class="pct">.500</td><td class="gb">4</td></tr>
+            <tr><td class="team-col">Harbor</td><td class="w">4</td><td class="l">8</td><td class="pct">.333</td><td class="gb">6</td></tr>
+            <tr><td class="team-col">Scotts Valley</td><td class="w">2</td><td class="l">10</td><td class="pct">.167</td><td class="gb">8</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- BVAL -->
+      <div class="league-card">
+        <div class="league-card-header">
+          <span class="league-name">Blossom Valley Athletic League</span>
+          <span class="league-abbr">BVAL · Mt. Hamilton</span>
+        </div>
+        <table class="standings-table">
+          <thead><tr><th>Team</th><th>W</th><th>L</th><th>PCT</th><th>GB</th></tr></thead>
+          <tbody>
+            <tr><td class="team-col">Willow Glen</td><td class="w">11</td><td class="l">1</td><td class="pct">.917</td><td class="gb">—</td></tr>
+            <tr><td class="team-col">Independence</td><td class="w">8</td><td class="l">4</td><td class="pct">.667</td><td class="gb">3</td></tr>
+            <tr><td class="team-col">Silver Creek</td><td class="w">7</td><td class="l">5</td><td class="pct">.583</td><td class="gb">4</td></tr>
+            <tr><td class="team-col">Evergreen Valley</td><td class="w">5</td><td class="l">7</td><td class="pct">.417</td><td class="gb">6</td></tr>
+            <tr><td class="team-col">San Jose</td><td class="w">3</td><td class="l">9</td><td class="pct">.250</td><td class="gb">8</td></tr>
+            <tr><td class="team-col">Mt. Pleasant</td><td class="w">2</td><td class="l">10</td><td class="pct">.167</td><td class="gb">9</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ────── SCORES ────── -->
+  <div id="scores" class="section">
+    <div class="section-header">
+      <div class="section-title">Scores &amp; Schedule</div>
+      <a class="maxpreps-btn" href="https://www.maxpreps.com/ca/central-coast-section/baseball/scores/" target="_blank">
+        Full Scoreboard on MaxPreps ↗
+      </a>
+    </div>
+
+    <div class="page-desc">
+      Recent results and upcoming games. All scores link to <a href="https://www.maxpreps.com/ca/central-coast-section/baseball/scores/" target="_blank">MaxPreps</a> for full box scores and game details.
+    </div>
+
+    <div class="scores-wrap">
+
+      <div class="date-label">April 3, 2026 — Thursday</div>
+      <div class="games-row">
+        <a class="game-card" href="https://www.maxpreps.com/ca/central-coast-section/baseball/scores/" target="_blank">
+          <div class="game-status final">Final</div>
+          <div class="game-teams">
+            <div class="game-team"><span class="game-team-name winner">Archbishop Mitty</span><span class="game-score winner">7</span></div>
+            <div class="game-team"><span class="game-team-name">Serra</span><span class="game-score loser">2</span></div>
+          </div>
+          <div class="game-league-tag">WCAL</div>
+        </a>
+        <a class="game-card" href="https://www.maxpreps.com/ca/central-coast-section/baseball/scores/" target="_blank">
+          <div class="game-status final">Final</div>
+          <div class="game-teams">
+            <div class="game-team"><span class="game-team-name winner">Monta Vista</span><span class="game-score winner">5</span></div>
+            <div class="game-team"><span class="game-team-name">Homestead</span><span class="game-score loser">3</span></div>
+          </div>
+          <div class="game-league-tag">SCVAL · De Anza</div>
+        </a>
+        <a class="game-card" href="https://www.maxpreps.com/ca/central-coast-section/baseball/scores/" target="_blank">
+          <div class="game-status final">Final</div>
+          <div class="game-teams">
+            <div class="game-team"><span class="game-team-name winner">Aptos</span><span class="game-score winner">8</span></div>
+            <div class="game-team"><span class="game-team-name">Harbor</span><span class="game-score loser">1</span></div>
+          </div>
+          <div class="game-league-tag">SCCAL</div>
+        </a>
+        <a class="game-card" href="https://www.maxpreps.com/ca/central-coast-section/baseball/scores/" target="_blank">
+          <div class="game-status final">Final</div>
+          <div class="game-teams">
+            <div class="game-team"><span class="game-team-name winner">Los Gatos</span><span class="game-score winner">4</span></div>
+            <div class="game-team"><span class="game-team-name">Gunn</span><span class="game-score loser">0</span></div>
+          </div>
+          <div class="game-league-tag">SCVAL · El Camino</div>
+        </a>
+        <a class="game-card" href="https://www.maxpreps.com/ca/central-coast-section/baseball/scores/" target="_blank">
+          <div class="game-status final">Final</div>
+          <div class="game-teams">
+            <div class="game-team"><span class="game-team-name winner">Salinas</span><span class="game-score winner">6</span></div>
+            <div class="game-team"><span class="game-team-name">Alisal</span><span class="game-score loser">4</span></div>
+          </div>
+          <div class="game-league-tag">PCAL · Gabilan</div>
+        </a>
+        <a class="game-card" href="https://www.maxpreps.com/ca/central-coast-section/baseball/scores/" target="_blank">
+          <div class="game-status final">Final</div>
+          <div class="game-teams">
+            <div class="game-team"><span class="game-team-name winner">Willow Glen</span><span class="game-score winner">9</span></div>
+            <div class="game-team"><span class="game-team-name">Mt. Pleasant</span><span class="game-score loser">2</span></div>
+          </div>
+          <div class="game-league-tag">BVAL · Mt. Hamilton</div>
+        </a>
+      </div>
+
+      <div class="date-label">April 1, 2026 — Tuesday</div>
+      <div class="games-row">
+        <a class="game-card" href="https://www.maxpreps.com/ca/central-coast-section/baseball/scores/" target="_blank">
+          <div class="game-status final">Final</div>
+          <div class="game-teams">
+            <div class="game-team"><span class="game-team-name winner">St. Francis</span><span class="game-score winner">3</span></div>
+            <div class="game-team"><span class="game-team-name">Valley Christian</span><span class="game-score loser">1</span></div>
+          </div>
+          <div class="game-league-tag">WCAL</div>
+        </a>
+        <a class="game-card" href="https://www.maxpreps.com/ca/central-coast-section/baseball/scores/" target="_blank">
+          <div class="game-status final">Final</div>
+          <div class="game-teams">
+            <div class="game-team"><span class="game-team-name winner">Bellarmine</span><span class="game-score winner">11</span></div>
+            <div class="game-team"><span class="game-team-name">Sacred Heart Prep</span><span class="game-score loser">3</span></div>
+          </div>
+          <div class="game-league-tag">WCAL</div>
+        </a>
+        <a class="game-card" href="https://www.maxpreps.com/ca/central-coast-section/baseball/scores/" target="_blank">
+          <div class="game-status final">Final</div>
+          <div class="game-teams">
+            <div class="game-team"><span class="game-team-name winner">Palo Alto</span><span class="game-score winner">6</span></div>
+            <div class="game-team"><span class="game-team-name">Fremont</span><span class="game-score loser">0</span></div>
+          </div>
+          <div class="game-league-tag">SCVAL · De Anza</div>
+        </a>
+        <a class="game-card" href="https://www.maxpreps.com/ca/central-coast-section/baseball/scores/" target="_blank">
+          <div class="game-status final">Final</div>
+          <div class="game-teams">
+            <div class="game-team"><span class="game-team-name winner">Gilroy</span><span class="game-score winner">7</span></div>
+            <div class="game-team"><span class="game-team-name">King City</span><span class="game-score loser">4</span></div>
+          </div>
+          <div class="game-league-tag">PCAL · Gabilan</div>
+        </a>
+      </div>
+
+      <div class="date-label">April 5, 2026 — Upcoming</div>
+      <div class="games-row">
+        <a class="game-card" href="https://www.maxpreps.com/ca/central-coast-section/baseball/scores/" target="_blank">
+          <div class="game-status">3:30 PM</div>
+          <div class="game-teams">
+            <div class="game-team"><span class="game-team-name">Bellarmine</span><span class="game-score" style="color:var(--text-muted);font-size:0.85rem">vs</span></div>
+            <div class="game-team"><span class="game-team-name">Archbishop Mitty</span><span class="game-score"></span></div>
+          </div>
+          <div class="game-league-tag">WCAL</div>
+        </a>
+        <a class="game-card" href="https://www.maxpreps.com/ca/central-coast-section/baseball/scores/" target="_blank">
+          <div class="game-status">3:30 PM</div>
+          <div class="game-teams">
+            <div class="game-team"><span class="game-team-name">Lynbrook</span><span class="game-score" style="color:var(--text-muted);font-size:0.85rem">vs</span></div>
+            <div class="game-team"><span class="game-team-name">Cupertino</span><span class="game-score"></span></div>
+          </div>
+          <div class="game-league-tag">SCVAL · De Anza</div>
+        </a>
+        <a class="game-card" href="https://www.maxpreps.com/ca/central-coast-section/baseball/scores/" target="_blank">
+          <div class="game-status">4:00 PM</div>
+          <div class="game-teams">
+            <div class="game-team"><span class="game-team-name">Palma</span><span class="game-score" style="color:var(--text-muted);font-size:0.85rem">vs</span></div>
+            <div class="game-team"><span class="game-team-name">Salinas</span><span class="game-score"></span></div>
+          </div>
+          <div class="game-league-tag">PCAL · Gabilan</div>
+        </a>
+        <a class="game-card" href="https://www.maxpreps.com/ca/central-coast-section/baseball/scores/" target="_blank">
+          <div class="game-status">3:30 PM</div>
+          <div class="game-teams">
+            <div class="game-team"><span class="game-team-name">Saratoga</span><span class="game-score" style="color:var(--text-muted);font-size:0.85rem">vs</span></div>
+            <div class="game-team"><span class="game-team-name">Mountain View</span><span class="game-score"></span></div>
+          </div>
+          <div class="game-league-tag">SCVAL · El Camino</div>
+        </a>
+        <a class="game-card" href="https://www.maxpreps.com/ca/central-coast-section/baseball/scores/" target="_blank">
+          <div class="game-status">3:30 PM</div>
+          <div class="game-teams">
+            <div class="game-team"><span class="game-team-name">Aptos</span><span class="game-score" style="color:var(--text-muted);font-size:0.85rem">vs</span></div>
+            <div class="game-team"><span class="game-team-name">Soquel</span><span class="game-score"></span></div>
+          </div>
+          <div class="game-league-tag">SCCAL</div>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <p>CCS Baseball Stats · Central Coast Section, California · Spring 2026</p>
+  <p style="margin-top:6px">Stats sourced from <a href="https://www.maxpreps.com/ca/central-coast-section/baseball/" target="_blank">MaxPreps</a> · Official standings at <a href="https://cifccs.org/sports/bsb/index" target="_blank">CIF-CCS</a></p>
+  <p style="margin-top:6px;font-size:0.72rem;color:#4a5a70">Prototype — sample data shown for design purposes</p>
+</footer>
+
+<script>
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    const btns = document.querySelectorAll('nav button');
+    const map = { home: 0, batting: 1, pitching: 2, standings: 3, scores: 4 };
+    btns[map[id]].classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
