@@ -16,12 +16,12 @@ const { chromium } = require('playwright');
 const fs   = require('fs');
 const path = require('path');
 
-// ─── SEASON ID & PRINT URL BUILDER ──────────────────────────────────────────
+// âââ SEASON ID & PRINT URL BUILDER ââââââââââââââââââââââââââââââââââââââââââ
 const SSID = '1278779e-84df-4e60-8d03-db0024535aa6';
 const pu   = id =>
   `https://www.maxpreps.com/print/team_stats.aspx?admin=0&bygame=0&league=0&print=1&schoolid=${id}&ssid=${SSID}`;
 
-// ─── TEAM LIST ──────────────────────────────────────────────────────────────
+// âââ TEAM LIST ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const TEAMS = [
   // Mountain Division
   { id:'sj',   league:'mountain',
@@ -78,14 +78,14 @@ const TEAMS = [
     printUrl: null },  // fallback to tab-click
 ];
 
-// ─── HELPERS ────────────────────────────────────────────────────────────────
+// ââ HELPERS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function cleanName(raw) {
-  // "A. Bluem(Jr)" → "A. Bluem"
+  // "A. Bluem(Jr)" â "A. Bluem"
   return (raw || '').replace(/\s*\((Fr|So|Jr|Sr|8th|9th|10th|11th|12th)\)/gi, '').trim();
 }
 
 function parseIP(s) {
-  // Convert baseball IP notation to decimal: "21.1" → 21.333, "21.2" → 21.667
+  // Convert baseball IP notation to decimal: "21.1" â 21.333, "21.2" â 21.667
   if (!s) return 0;
   const str = s.toString().trim();
   if (!str || str === '0') return 0;
@@ -105,7 +105,7 @@ function colVal(obj, ...keys) {
   return '';
 }
 
-// ─── PRINT PAGE SCRAPER ──────────────────────────────────────────────────────
+// ââ PRINT PAGE SCRAPER ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function scrapeFromPrintPage(page, team) {
   console.log(`[${team.id.toUpperCase()}] (print) ${team.printUrl}`);
 
@@ -115,7 +115,7 @@ async function scrapeFromPrintPage(page, team) {
     try {
       await page.waitForSelector('table', { timeout: 10000 });
     } catch {
-      console.log(`  [${team.id.toUpperCase()}] No table found after 10s — falling back to tab-click`);
+      console.log(`  [${team.id.toUpperCase()}] No table found after 10s â falling back to tab-click`);
       return scrapeFromTeamPage(page, team);
     }
     await page.waitForTimeout(1000);
@@ -123,12 +123,18 @@ async function scrapeFromPrintPage(page, team) {
     // Extract all tables from the print page
     const tables = await page.evaluate(() => {
       return Array.from(document.querySelectorAll('table')).map(t => {
-        // Normalize header text: lowercase, strip non-alphanumeric
-        const headers = Array.from(t.querySelectorAll('th')).map(th =>
-          th.textContent.trim().toLowerCase().replace(/[^a-z0-9]/g, '')
+        // Only use <thead> or first <tr> for headers (MaxPreps print pages use <th>
+        // in tbody rows for player name cells, which would pollute the header list)
+        const theadThs = t.querySelectorAll('thead th');
+        const headerEls = theadThs.length
+          ? Array.from(theadThs)
+          : Array.from((t.querySelector('tr') || {querySelectorAll:()=>[]}).querySelectorAll('th, td'));
+        const headers = headerEls.map(el =>
+          el.textContent.trim().toLowerCase().replace(/[^a-z0-9]/g, '')
         );
-        const rows = Array.from(t.querySelectorAll('tr')).slice(1).map(tr =>
-          Array.from(tr.querySelectorAll('td')).map(td => td.textContent.trim())
+        // Include both <th> and <td> cells in each data row (player name is often a <th>)
+        const rows = Array.from(t.querySelectorAll('tbody tr, tr')).slice(theadThs.length ? 0 : 1).map(tr =>
+          Array.from(tr.querySelectorAll('th, td')).map(td => td.textContent.trim())
         ).filter(cells => cells.length > 1);
         return { headers, rows };
       });
@@ -161,22 +167,22 @@ async function scrapeFromPrintPage(page, team) {
       return obj;
     }
 
-    // ── Build HITTERS ──
+    // ââ Build HITTERS ââ
     const hitters = [];
     if (batTable) {
       batTable.rows.forEach(row => {
         const b = makeRowObj(batTable, row);
-        const name = b['name'] || b['player'] || colVal(b, 'name', 'player', 'playername');
+        const name = colVal(b, 'name', 'player', 'playername', 'athletename');
         if (!name) return;
         const lc = name.toLowerCase();
         if (lc.includes('total') || lc.includes('season')) return;
 
-        // Stolen bases — prefer baserunning table if available, else use batting table columns
+        // Stolen bases â prefer baserunning table if available, else use batting table columns
         let sb = 0, cs = 0;
         if (brTable) {
           const brRow = brTable.rows.find(r => {
             const n = makeRowObj(brTable, r);
-            const rName = n['name'] || n['player'] || '';
+            const rName = colVal(n, 'name', 'player', 'playername', 'athletename');
             return cleanName(rName).toLowerCase() === cleanName(name).toLowerCase();
           });
           if (brRow) {
@@ -213,12 +219,12 @@ async function scrapeFromPrintPage(page, team) {
       });
     }
 
-    // ── Build PITCHERS ──
+    // ââ Build PITCHERS ââ
     const pitchers = [];
     if (pitTable) {
       pitTable.rows.forEach(row => {
         const p = makeRowObj(pitTable, row);
-        const name = p['name'] || p['player'] || colVal(p, 'name', 'player', 'playername');
+        const name = colVal(p, 'name', 'player', 'playername', 'athletename');
         if (!name) return;
         const lc = name.toLowerCase();
         if (lc.includes('total') || lc.includes('season')) return;
@@ -243,20 +249,20 @@ async function scrapeFromPrintPage(page, team) {
 
     // If print page yielded nothing, fall back to tab-click approach
     if (hitters.length === 0 && pitchers.length === 0) {
-      console.log(`  [${team.id.toUpperCase()}] Print page yielded 0 results — falling back to tab-click`);
+      console.log(`  [${team.id.toUpperCase()}] Print page yielded 0 results â falling back to tab-click`);
       return scrapeFromTeamPage(page, team);
     }
 
-    console.log(`  ✓ ${hitters.length} hitters, ${pitchers.length} pitchers`);
+    console.log(`  â ${hitters.length} hitters, ${pitchers.length} pitchers`);
     return { hitters, pitchers };
 
   } catch (err) {
-    console.error(`  ✗ ERROR (print page): ${err.message} — falling back to tab-click`);
+    console.error(`  â ERROR (print page): ${err.message} â falling back to tab-click`);
     return scrapeFromTeamPage(page, team);
   }
 }
 
-// ─── PAGE SCRAPING HELPERS (tab-click fallback) ──────────────────────────────
+// âââ PAGE SCRAPING HELPERS (tab-click fallback) ââââââââââââââââââââââââââââââ
 async function clickSubTab(page, text) {
   try {
     const btn = await page.$(`button:has-text("${text}")`);
@@ -283,31 +289,31 @@ async function scrapeTables(page) {
   });
 }
 
-// ─── TAB-CLICK FALLBACK SCRAPER ──────────────────────────────────────────────
+// âââ TAB-CLICK FALLBACK SCRAPER ââââââââââââââââââââââââââââââââââââââââââââââ
 async function scrapeFromTeamPage(page, team) {
   console.log(`[${team.id.toUpperCase()}] (tabs) ${team.homeUrl}stats/`);
 
   try {
     await page.goto(team.homeUrl + 'stats/', {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: 45000
     });
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(3500);
 
     await clickSubTab(page, 'Player Stats');
 
-    // ── BATTING ──
+    // ââ BATTING ââ
     await clickSubTab(page, 'Batting');
     const batTables = await scrapeTables(page);
     const bat0 = batTables[0] || { headers:[], rows:[] };
     const bat1 = batTables[1] || { headers:[], rows:[] };
 
-    // ── BASERUNNING ──
+    // ââ BASERUNNING ââ
     await clickSubTab(page, 'Baserunning');
     const brTables = await scrapeTables(page);
     const br0 = brTables[0] || { headers:[], rows:[] };
 
-    // ── PITCHING ──
+    // ââ PITCHING ââ
     await clickSubTab(page, 'Pitching');
     const pitTables = await scrapeTables(page);
     const pit0 = pitTables[0] || { headers:[], rows:[] };
@@ -323,7 +329,7 @@ async function scrapeFromTeamPage(page, team) {
       return obj;
     }
 
-    // ── Build HITTERS ──
+    // ââ Build HITTERS ââ
     const hitters = [];
     bat0.rows.forEach((_, i) => {
       const b0 = rowObj(bat0, i);
@@ -363,7 +369,7 @@ async function scrapeFromTeamPage(page, team) {
       });
     });
 
-    // ── Build PITCHERS ──
+    // ââ Build PITCHERS ââ
     const pitchers = [];
     pit0.rows.forEach((_, i) => {
       const p0 = rowObj(pit0, i);
@@ -390,16 +396,16 @@ async function scrapeFromTeamPage(page, team) {
       });
     });
 
-    console.log(`  ✓ ${hitters.length} hitters, ${pitchers.length} pitchers`);
+    console.log(`  â ${hitters.length} hitters, ${pitchers.length} pitchers`);
     return { hitters, pitchers };
 
   } catch (err) {
-    console.error(`  ✗ ERROR: ${err.message}`);
+    console.error(`  â ERROR: ${err.message}`);
     return { hitters: [], pitchers: [] };
   }
 }
 
-// ─── SCRAPE ONE TEAM (routes to print page or tab-click fallback) ─────────────
+// âââ SCRAPE ONE TEAJ (routes to print page or tab-click fallback) âââââââââââââ
 async function scrapeTeam(page, team) {
   if (team.printUrl) {
     return scrapeFromPrintPage(page, team);
@@ -408,7 +414,8 @@ async function scrapeTeam(page, team) {
   }
 }
 
-// ─── FORMAT OUTPUT ────────────────────────────────────────────────────────────
+// âââ FORMAT OUTPUT âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+
 function fmtHitter(p) {
   const n = JSON.stringify(p.name);
   return `  {name:${n}, team:'${p.team}', league:'${p.league}', pa:${p.pa}, ab:${p.ab}, h:${p.h}, d:${p.d}, t:${p.t}, hr:${p.hr}, r:${p.r}, rbi:${p.rbi}, bb:${p.bb}, hbp:${p.hbp}, sf:${p.sf}, k:${p.k}, sb:${p.sb}, cs:${p.cs}}`;
@@ -419,7 +426,7 @@ function fmtPitcher(p) {
   return `  {name:${n}, team:'${p.team}', league:'${p.league}', w:${p.w}, l:${p.l}, ip:${p.ip.toFixed(4)}, bf:${p.bf}, er:${p.er}, k:${p.k}, h:${p.h}, bb:${p.bb}, hr:${p.hr}, hbp:${p.hbp}}`;
 }
 
-// ─── INJECT INTO HTML ─────────────────────────────────────────────────────────
+// âââ INJECT INTO HTML âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function injectIntoHTML(allHitters, allPitchers, today) {
   const htmlPath = path.join(__dirname, '..', 'ccaa-baseball.html');
   if (!fs.existsSync(htmlPath)) {
@@ -455,17 +462,17 @@ function injectIntoHTML(allHitters, allPitchers, today) {
   );
 
   fs.writeFileSync(htmlPath, html, 'utf8');
-  console.log(`\n✓ Wrote ccaa-baseball.html (${allHitters.length} hitters, ${allPitchers.length} pitchers)`);
+  console.log(`\nâ Wrote ccaa-baseball.html (${allHitters.length} hitters, ${allPitchers.length} pitchers)`);
   return true;
 }
 
-// ─── MAIN ─────────────────────────────────────────────────────────────────────
+// âââ MAIN âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function main() {
   const today = new Date().toLocaleDateString('en-US', {
     timeZone: 'America/Los_Angeles',
     month: 'short', day: 'numeric', year: 'numeric'
   });
-  console.log(`\n=== CCAA Baseball Scraper — ${today} ===\n`);
+  console.log(`\n=== CCAA Baseball Scraper â ${today} ===\n`);
 
   const browser = await chromium.launch({
     headless: true,
@@ -502,7 +509,7 @@ async function main() {
   if (errors.length) console.warn(`Teams with errors: ${errors.join(', ')}`);
 
   if (allHitters.length < 10) {
-    console.error('Too few hitters scraped — aborting HTML update to avoid data loss');
+    console.error('Too few hitters scraped â aborting HTML update to avoid data loss');
     process.exit(1);
   }
 
@@ -517,7 +524,7 @@ async function main() {
     hitters: allHitters,
     pitchers: allPitchers
   }, null, 2));
-  console.log(`✓ Backup saved to scraper/last-scrape.json`);
+  console.log(`â Backup saved to scraper/last-scrape.json`);
 }
 
 main().catch(err => {
