@@ -309,6 +309,7 @@
 <div id="stats" class="section">
   <div class="notice">📊 <span>Stats framework built from <a href="https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--mountain/stat-leaders/?leagueid=997fc154-7b9c-4f2c-b22f-242464a7c81c" target="_blank">MaxPreps CCAA stat leaders</a>. Advanced metrics (wOBA, ISO, BABIP, FIP, K/9 etc.) computed from base stats. Sample data shown — update the <code style="font-size:.75em;color:var(--gold)">PLAYERS</code> array in the JS to load real MaxPreps exports.</span></div>
 
+    <div class="notice">🎯 <span id="qualNotice">Leaderboard qualifiers: computed from current data.</span></div>
   <div class="stats-subtabs">
     <button class="stats-subtab active" onclick="showStatsPanel('hitting',this)">🏏 Hitting</button>
     <button class="stats-subtab" onclick="showStatsPanel('pitching',this)">⚾ Pitching</button>
@@ -937,6 +938,24 @@ const LG           = computeLeagueAverages(RAW_HITTERS, RAW_PITCHERS);
 const ALL_HITTERS  = computeHitters(RAW_HITTERS, LG.lgwOBA);
 const ALL_PITCHERS = computePitchers(RAW_PITCHERS, LG.lgERA);
 
+// ── QUALIFICATION FILTERS (min PA / min IP based on pool average) ──────────
+const PA_MIN = RAW_HITTERS.length > 0
+  ? Math.round(RAW_HITTERS.reduce((s, h) => s + h.pa, 0) / RAW_HITTERS.length)
+  : 0;
+const IP_MIN = RAW_PITCHERS.length > 0
+  ? RAW_PITCHERS.reduce((s, p) => s + p.ip, 0) / RAW_PITCHERS.length
+  : 0;
+// ALL_HITTERS / ALL_PITCHERS = computed stats for everyone (used by team views)
+// QUAL_HITTERS / QUAL_PITCHERS = leaderboard-qualified only (used by stat leaderboards)
+const QUAL_HITTERS  = ALL_HITTERS.filter(h => {
+  const raw = RAW_HITTERS.find(r => r.name === h.name && r.team === h.team);
+  return raw && raw.pa >= PA_MIN;
+});
+const QUAL_PITCHERS = ALL_PITCHERS.filter(p => {
+  const raw = RAW_PITCHERS.find(r => r.name === p.name && r.team === p.team);
+  return raw && raw.ip >= IP_MIN;
+});
+
 // ═══════════════════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════════════════
@@ -1079,7 +1098,7 @@ function colorClass(val, key) {
 // ═══════════════════════════════════════════════════════════════
 function renderHitTable() {
   const cols = getHitCols();
-  let data = ALL_HITTERS.filter(p => currentLeague === 'all' || p.league === currentLeague);
+  let data = QUAL_HITTERS.filter(p => currentLeague === 'all' || p.league === currentLeague);
 
   // sort — nulls always go to the bottom
   data = data.slice().sort((a,b) => {
@@ -1118,7 +1137,7 @@ function renderHitTable() {
 
 function renderPitchTable() {
   const cols = getPitchCols();
-  let data = ALL_PITCHERS.filter(p => currentLeague === 'all' || p.league === currentLeague);
+  let data = QUAL_PITCHERS.filter(p => currentLeague === 'all' || p.league === currentLeague);
 
   data = data.slice().sort((a,b) => {
     const av = a[pitchSortCol], bv = b[pitchSortCol];
@@ -1326,6 +1345,21 @@ renderGames('apr2');
 renderHitTable();
 renderPitchTable();
 renderTeams();
+
+// ── Qualifier notice ──
+(function() {
+  function formatIP(ip) {
+    const whole = Math.floor(ip);
+    const frac  = ip - whole;
+    const thirds = Math.round(frac * 3);
+    return thirds === 0 ? whole + '.0' : whole + '.' + thirds;
+  }
+  const notice = document.getElementById('qualNotice');
+  if (notice) {
+    notice.textContent =
+      'Leaderboard qualifiers: min ' + PA_MIN + ' PA (hitters) \u00b7 min ' + formatIP(IP_MIN) + ' IP (pitchers) \u2014 based on CCAA-wide average';
+  }
+})();
 </script>
 </body>
 </html>
