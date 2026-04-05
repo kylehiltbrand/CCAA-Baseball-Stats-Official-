@@ -71,6 +71,19 @@ const TEAMS = [
   // oa doesn't have player stats on MaxPreps — appears in standings only
 ];
 
+// ─── STANDINGS LEAGUE URLS (live from MaxPreps conference pages) ─────────────
+const STANDINGS_LEAGUES = [
+  { id:'mountain', name:'Mountain League', sub:'CCAA — Mountain', colorClass:'mountain',
+    url:   'https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--mountain/?leagueid=997fc154-7b9c-4f2c-b22f-242464a7c81c',
+    mpUrl: 'https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--mountain/?leagueid=997fc154-7b9c-4f2c-b22f-242464a7c81c' },
+  { id:'sunset',   name:'Sunset League',   sub:'CCAA — Sunset',   colorClass:'sunset',
+    url:   'https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--sunset/?leagueid=fb2b85ea-c8d0-4acf-873c-3296a5780eff',
+    mpUrl: 'https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--sunset/?leagueid=fb2b85ea-c8d0-4acf-873c-3296a5780eff' },
+  { id:'ocean',    name:'Ocean League',    sub:'CCAA — Ocean',    colorClass:'ocean',
+    url:   'https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--ocean/?leagueid=692cdcda-f9c9-46d2-a584-e075f5b97c75',
+    mpUrl: 'https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--ocean/?leagueid=692cdcda-f9c9-46d2-a584-e075f5b97c75' }
+];
+
 // ─── HELPERS ────────────────────────────────────────────────────────────────
 function cleanName(raw) {
   // "A. Bluem(Jr)" → "A. Bluem"
@@ -96,6 +109,113 @@ function colVal(obj, ...keys) {
     if (obj[k] !== undefined && obj[k] !== '') return obj[k];
   }
   return '';
+}
+
+// ─── STANDINGS SCRAPER (live from MaxPreps conference pages only) ────────────
+async function scrapeStandings(page) {
+  const result = {};
+  console.log('\n=== Scraping standings from MaxPreps conference pages ===');
+
+  for (const lg of STANDINGS_LEAGUES) {
+    try {
+      console.log(`  Loading ${lg.name}: ${lg.url}`);
+      await page.goto(lg.url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      await page.waitForTimeout(2500);
+
+      const teams = await page.evaluate(() => {
+        const rows = document.querySelectorAll('table tbody tr');
+        return Array.from(rows).map((r, i) => {
+          const cells = Array.from(r.querySelectorAll('td'));
+          const link  = r.querySelector('a');
+
+          // MaxPreps standings column layout:
+          // 0:rank | 1:name | 2:conf W-L | 3:conf pct | 4:RS | 5:RA | 6:overall | 7:ov pct | 8:ovRS | 9:ovRA | 10:streak
+          const confWL  = (cells[2]?.textContent.trim() || '0-0').split('-');
+          const ovRaw   = cells[6]?.textContent.trim() || '0-0';
+          const ovParts = ovRaw.split('-');
+          const streakRaw = cells[10]?.textContent.trim() || '';
+          const sNum  = parseInt(streakRaw) || 0;
+          const sType = streakRaw.endsWith('W') ? 'W' : 'L';
+
+          return {
+            rank: i + 1,
+            name: cells[1]?.textContent.trim() || '',
+            url:  link?.href || '',
+            cw:   parseInt(confWL[0]) || 0,
+            cl:   parseInt(confWL[1]) || 0,
+            ow:   parseInt(ovParts[0]) || 0,
+            ol:   parseInt(ovParts[1]) || 0,
+            ot:   parseInt(ovParts[2]) || 0,
+            streak: sType + sNum
+          };
+        });
+      });
+
+      // Compute GB relative to first-place team
+      if (teams.length > 0) {
+        const lw = teams[0].cw;
+        const ll = teams[0].cl;
+        teams.forEach(t => {
+          t.gb = t.rank === 1 ? 0 : ((lw - ll) - (t.cw - t.cl)) / 2;
+        });
+      }
+
+      result[lg.id] = teams;
+      console.log(`  ✓ ${lg.name}: ${teams.length} teams`);
+    } catch (err) {
+      console.error(`  ✗ ${lg.name} standings error: ${err.message}`);
+      result[lg.id] = [];
+    }
+  }
+
+  return result;
+}
+
+// ─── GENERATE STANDINGS HTML BLOCK ──────────────────────────────────────────
+function generateStandingsHTML(standings) {
+  const blocks = STANDINGS_LEAGUES.map(lg => {
+    const teams = standings[lg.id] || [];
+
+    const rows = teams.map((t, i) => {
+      const rankClass = i === 0 ? 'rank first' : 'rank';
+      const gbStr = t.gb === 0
+        ? '—'
+        : (t.gb % 1 === 0 ? String(t.gb) : t.gb.toFixed(1));
+      const streakType = t.streak.charAt(0);
+      const streakNum  = t.streak.slice(1);
+      const streakSpan = streakType === 'W'
+        ? `<span class="w-streak">W${streakNum}</span>`
+        : `<span class="l-streak">L${streakNum}</span>`;
+      const total = t.cw + t.cl;
+      const pct   = total === 0 ? '.000' : (t.cw / total).toFixed(3).replace(/^0/, '');
+      const ov    = t.ot ? `${t.ow}-${t.ol}-${t.ot}` : `${t.ow}-${t.ol}`;
+
+      return `          <tr><td class="${rankClass}">${t.rank}</td><td class="team-name-cell"><a href="${t.url}" target="_blank">${t.name}</a></td><td class="w">${t.cw}</td><td class="l">${t.cl}</td><td class="pct">${pct}</td><td class="gb">${gbStr}</td><td class="streak">${streakSpan}</td><td style="color:var(--muted);font-size:.78rem">${ov}</td></tr>`;
+    }).join('\n');
+
+    return `    <div class="league-block" data-league="${lg.id}">
+      <div class="league-block-header">
+        <div class="league-color-bar ${lg.colorClass}"></div>
+        <div><div class="league-block-name">${lg.name}</div><div class="league-block-sub">${lg.sub}</div></div>
+        <a class="league-mp-link" href="${lg.mpUrl}" target="_blank">MaxPreps ↗</a>
+      </div>
+      <table class="standings-tbl">
+        <thead><tr><th>#</th><th style="text-align:left">Team</th><th>W</th><th>L</th><th>PCT</th><th>GB</th><th>Str</th><th>Overall</th></tr></thead>
+        <tbody>
+${rows}
+        </tbody>
+      </table>
+    </div>`;
+  }).join('\n');
+
+  return `<!-- ══════════ STANDINGS ══════════ -->
+<div id="standings" class="section">
+  <div class="standings-grid">
+${blocks}
+  </div>
+</div>
+
+`;
 }
 
 // ─── PRINT PAGE SCRAPER ──────────────────────────────────────────────────────
@@ -407,19 +527,19 @@ async function scrapeTeam(page, team) {
   }
 }
 
-// ─── FORMAT OUTPUT ────────────────────────────────────────────────────────────
+// ─── FORMAT OUTPUT  b��────────────────────────────────────────────────────────────
 function fmtHitter(p) {
   const n = JSON.stringify(p.name);
-  return `  {name:${n}, team:'${p.team}', league:'${p.league}', pa:${p.pa}, ab:${p.ab}, h:${p.h}, d:${p.d}, t:${p.t}, hr:${p.hr}, r:${p.r}, rbi:${p.rbi}, bb:${p.bb}, hbp:${p.hbp}, sf:${p.sf}, k:${p.k}, sb:${p.sb}, cs:${p.cs}}`;
+  return `   {name:${n}, team:'${p.team}', league:'${p.league}', pa:${p.pa}, ab:${p.ab}, h:${p.h}, d:${p.d}, t:${p.t}, hr:${p.hr}, r:${p.r}, rbi:${p.rbi}, bb:${p.bb}, hbp:${p.hbp}, sf:${p.sf}, k:${p.k}, sb:${p.sb}, cs:${p.cs}}`;
 }
 
 function fmtPitcher(p) {
   const n = JSON.stringify(p.name);
-  return `  {name:${n}, team:'${p.team}', league:'${p.league}', w:${p.w}, l:${p.l}, ip:${p.ip.toFixed(4)}, bf:${p.bf}, er:${p.er}, k:${p.k}, h:${p.h}, bb:${p.bb}, hr:${p.hr}, hbp:${p.hbp}}`;
+  return `   {name:${n}, team:'${p.team}', league:'${p.league}', w:${p.w}, l:${p.l}, ip:${p.ip.toFixed(4)}, bf:${p.bf}, er:${p.er}, k:${p.k}, h:${p.h}, bb:${p.bb}, hr:${p.hr}, hbp:${p.hbp}}`;
 }
 
 // ─── INJECT INTO HTML ─────────────────────────────────────────────────────────
-function injectIntoHTML(allHitters, allPitchers, today) {
+function injectIntoHTML(allHitters, allPitchers, standingsData, today) {
   const htmlPath = path.join(__dirname, '..', 'ccaa-baseball.html');
   if (!fs.existsSync(htmlPath)) {
     console.error('ccaa-baseball.html not found at:', htmlPath);
@@ -432,7 +552,7 @@ function injectIntoHTML(allHitters, allPitchers, today) {
   const pitchStr = allPitchers.map(fmtPitcher).join(',\n');
 
   // Replace RAW_HITTERS
-  const hitPattern = /const RAW_HITTERS\s*=\s*\[[\s\S]*?\];/;
+  const hitPattern = /const RAW_HITTERS\s*=\S*\[[\s\S]*?\];/;
   if (!hitPattern.test(html)) {
     console.error('Could not find RAW_HITTERS in HTML');
     return false;
@@ -456,6 +576,17 @@ function injectIntoHTML(allHitters, allPitchers, today) {
   // Ensure correct league assignments (Cabrillo=sunset, Morro Bay=mountain)
   html = html.replace(/(cab:\s*\{[^}]*?short:'CAB',\s*league:)'mountain'/, "$1'sunset'  ");
   html = html.replace(/(mb:\s*\{[^}]*?short:'MB',\s*league:)'sunset'\s*/, "$1'mountain'");
+
+  // Replace the entire standings section with fresh data scraped live from MaxPreps conference pages
+  if (standingsData) {
+    const standingsPattern = /<!-- ══════════ STANDINGS ══════════ -->[\s\S]*?(?=<!-- ══════════ STATS)/;
+    if (standingsPattern.test(html)) {
+      html = html.replace(standingsPattern, generateStandingsHTML(standingsData));
+      console.log('✓ Standings updated from live MaxPreps conference pages');
+    } else {
+      console.warn('Could not find STANDINGS section marker — skipping standings update');
+    }
+  }
 
   fs.writeFileSync(htmlPath, html, 'utf8');
   console.log(`\n✓ Wrote ccaa-baseball.html (${allHitters.length} hitters, ${allPitchers.length} pitchers)`);
@@ -497,6 +628,9 @@ async function main() {
     await page.waitForTimeout(1000);
   }
 
+  // Scrape standings live from MaxPreps conference pages (not from any cached files)
+  const standingsData = await scrapeStandings(page);
+
   await browser.close();
 
   console.log(`\n=== RESULTS ===`);
@@ -509,7 +643,7 @@ async function main() {
     process.exit(1);
   }
 
-  const ok = injectIntoHTML(allHitters, allPitchers, today);
+  const ok = injectIntoHTML(allHitters, allPitchers, standingsData, today);
   if (!ok) process.exit(1);
 
   const backupPath = path.join(__dirname, 'last-scrape.json');
