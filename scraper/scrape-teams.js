@@ -36,12 +36,7 @@ const TEAMS = [
   { id:'mb',   league:'mountain',
     homeUrl:  'https://www.maxpreps.com/ca/morro-bay/morro-bay-pirates/baseball/',
     printUrl: pu('494bf68f-157f-4cfa-af68-a897b6b940b4') },
-  { id:'mp',   league:'mountain',
-    homeUrl:  'https://www.maxpreps.com/ca/san-luis-obispo/mission-college-prep-royals/baseball/',
-    printUrl: null },  // fallback to tab-click
-  { id:'lom',  league:'mountain',
-    homeUrl:  'https://www.maxpreps.com/ca/lompoc/lompoc-braves/baseball/',
-    printUrl: null },  // fallback to tab-click
+  // mp and lom don't have player stats on MaxPreps â appear in standings only
 
   // Sunset Division
   { id:'slo',  league:'sunset',
@@ -73,12 +68,10 @@ const TEAMS = [
   { id:'sm',   league:'ocean',
     homeUrl:  'https://www.maxpreps.com/ca/santa-maria/santa-maria-saints/baseball/',
     printUrl: pu('5fff6cdf-6099-4cfb-9297-5734517e28ff') },
-  { id:'oa',   league:'ocean',
-    homeUrl:  'https://www.maxpreps.com/ca/orcutt/orcutt-academy-spartans/baseball/',
-    printUrl: null },  // fallback to tab-click
+  // oa doesn't have player stats on MaxPreps â appears in standings only
 ];
 
-// ââ HELPERS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// âââ HELPERS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function cleanName(raw) {
   // "A. Bluem(Jr)" â "A. Bluem"
   return (raw || '').replace(/\s*\((Fr|So|Jr|Sr|8th|9th|10th|11th|12th)\)/gi, '').trim();
@@ -105,7 +98,7 @@ function colVal(obj, ...keys) {
   return '';
 }
 
-// ââ PRINT PAGE SCRAPER ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// âââ PRINT PAGE SCRAPER ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function scrapeFromPrintPage(page, team) {
   console.log(`[${team.id.toUpperCase()}] (print) ${team.printUrl}`);
 
@@ -182,7 +175,7 @@ async function scrapeFromPrintPage(page, team) {
         if (brTable) {
           const brRow = brTable.rows.find(r => {
             const n = makeRowObj(brTable, r);
-            const rName = colVal(n, 'name', 'player', 'playername', 'athletename');
+            const rName = n['name'] || n['player'] || '';
             return cleanName(rName).toLowerCase() === cleanName(name).toLowerCase();
           });
           if (brRow) {
@@ -405,7 +398,7 @@ async function scrapeFromTeamPage(page, team) {
   }
 }
 
-// âââ SCRAPE ONE TEAJ (routes to print page or tab-click fallback) âââââââââââââ
+// âââ SCRAPE ONE TEAM (routes to print page or tab-click fallback) âââââââââââââ
 async function scrapeTeam(page, team) {
   if (team.printUrl) {
     return scrapeFromPrintPage(page, team);
@@ -414,8 +407,7 @@ async function scrapeTeam(page, team) {
   }
 }
 
-// âââ FORMAT OUTPUT âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-
+// âââ FORMAT OUTPUT ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function fmtHitter(p) {
   const n = JSON.stringify(p.name);
   return `  {name:${n}, team:'${p.team}', league:'${p.league}', pa:${p.pa}, ab:${p.ab}, h:${p.h}, d:${p.d}, t:${p.t}, hr:${p.hr}, r:${p.r}, rbi:${p.rbi}, bb:${p.bb}, hbp:${p.hbp}, sf:${p.sf}, k:${p.k}, sb:${p.sb}, cs:${p.cs}}`;
