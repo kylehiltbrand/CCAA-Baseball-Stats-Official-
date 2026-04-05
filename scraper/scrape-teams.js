@@ -110,8 +110,15 @@ async function scrapeFromPrintPage(page, team) {
   console.log(`[${team.id.toUpperCase()}] (print) ${team.printUrl}`);
 
   try {
-    await page.goto(team.printUrl, { waitUntil: 'domcontentloaded', timeout: 45000 });
-    await page.waitForTimeout(2000);
+    await page.goto(team.printUrl, { waitUntil: 'networkidle', timeout: 45000 });
+    // Wait for at least one table to appear (print pages may render via JS)
+    try {
+      await page.waitForSelector('table', { timeout: 10000 });
+    } catch {
+      console.log(`  [${team.id.toUpperCase()}] No table found after 10s — falling back to tab-click`);
+      return scrapeFromTeamPage(page, team);
+    }
+    await page.waitForTimeout(1000);
 
     // Extract all tables from the print page
     const tables = await page.evaluate(() => {
@@ -126,6 +133,10 @@ async function scrapeFromPrintPage(page, team) {
         return { headers, rows };
       });
     });
+
+    // Log all table headers found (helps debug mismatches)
+    console.log(`  tables found: ${tables.length}, headers: ${tables.map(t => '['+t.headers.join(',')+']').join(' ')}`);
+
 
     // Identify tables by their column headers
     let batTable  = null;
@@ -230,12 +241,18 @@ async function scrapeFromPrintPage(page, team) {
       });
     }
 
+    // If print page yielded nothing, fall back to tab-click approach
+    if (hitters.length === 0 && pitchers.length === 0) {
+      console.log(`  [${team.id.toUpperCase()}] Print page yielded 0 results — falling back to tab-click`);
+      return scrapeFromTeamPage(page, team);
+    }
+
     console.log(`  ✓ ${hitters.length} hitters, ${pitchers.length} pitchers`);
     return { hitters, pitchers };
 
   } catch (err) {
-    console.error(`  ✗ ERROR (print page): ${err.message}`);
-    return { hitters: [], pitchers: [] };
+    console.error(`  ✗ ERROR (print page): ${err.message} — falling back to tab-click`);
+    return scrapeFromTeamPage(page, team);
   }
 }
 
@@ -272,10 +289,10 @@ async function scrapeFromTeamPage(page, team) {
 
   try {
     await page.goto(team.homeUrl + 'stats/', {
-      waitUntil: 'domcontentloaded',
+      waitUntil: 'networkidle',
       timeout: 45000
     });
-    await page.waitForTimeout(2500);
+    await page.waitForTimeout(3000);
 
     await clickSubTab(page, 'Player Stats');
 
