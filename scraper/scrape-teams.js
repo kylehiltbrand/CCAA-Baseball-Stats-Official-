@@ -552,7 +552,7 @@ function injectIntoHTML(allHitters, allPitchers, standingsData, today) {
   const pitchStr = allPitchers.map(fmtPitcher).join(',\n');
 
   // Replace RAW_HITTERS
-  const hitPattern = /const RAW_HITTERS\s*=\S*\[[\s\S]*?\];/;
+  const hitPattern = /const RAW_HITTERS\s*=\s*\[[\s\S]*?\];/;
   if (!hitPattern.test(html)) {
     console.error('Could not find RAW_HITTERS in HTML');
     return false;
