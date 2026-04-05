@@ -1,0 +1,13 @@
+{
+  "name": "ccaa-scraper",
+  "version": "1.0.0",
+  "description": "CCAA Baseball Stats Scraper â scrapes all 16 MaxPreps team pages",
+  "main": "scrape-teams.js",
+  "scripts": {
+    "scrape": "node scrape-teams.js",
+    "install-browsers": "npx playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "^1.43.0"
+  }
+}
