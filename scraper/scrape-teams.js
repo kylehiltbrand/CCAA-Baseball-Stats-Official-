@@ -13,7 +13,7 @@ const { chromium } = require('playwright');
 const fs   = require('fs');
 const path = require('path');
 
-// ââ TEAM LIST âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── TEAM LIST ──────────────────────────────────────────────────────────────
 const TEAMS = [
   // Mountain Division
   { id:'sj',   league:'mountain', url:'https://www.maxpreps.com/ca/santa-maria/st-joseph-knights/baseball/' },
@@ -36,14 +36,14 @@ const TEAMS = [
   { id:'oa',   league:'ocean',    url:'https://www.maxpreps.com/ca/orcutt/orcutt-academy-spartans/baseball/' },
 ];
 
-// âââ HELPERS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── HELPERS ────────────────────────────────────────────────────────────────
 function cleanName(raw) {
-  // "A. Bluem(Jr)" â "A. Bluem"
+  // "A. Bluem(Jr)" → "A. Bluem"
   return (raw || '').replace(/\s*\((Fr|So|Jr|Sr|8th|9th|10th|11th|12th)\)/gi, '').trim();
 }
 
 function parseIP(s) {
-  // Convert baseball IP notation to decimal: "21.1" â 21.333, "21.2" â 21.667
+  // Convert baseball IP notation to decimal: "21.1" → 21.333, "21.2" → 21.667
   if (!s) return 0;
   const str = s.toString().trim();
   if (!str || str === '0') return 0;
@@ -55,7 +55,7 @@ function parseIP(s) {
 
 const int = (s) => parseInt(s) || 0;
 
-// âââ PAGE SCRAPING HELPERS âââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── PAGE SCRAPING HELPERS ───────────────────────────────────────────────────
 async function clickSubTab(page, text) {
   try {
     // Try button first
@@ -84,7 +84,7 @@ async function scrapeTables(page) {
   });
 }
 
-// âââ SCRAPE ONE TEAM âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── SCRAPE ONE TEAM ─────────────────────────────────────────────────────────
 async function scrapeTeam(page, team) {
   console.log(`\n[${team.id.toUpperCase()}] ${team.url}stats/`);
 
@@ -95,10 +95,10 @@ async function scrapeTeam(page, team) {
     });
     await page.waitForTimeout(2500);
 
-    // ââ Click into Player Stats view ââ
+    // ── Click into Player Stats view ──
     await clickSubTab(page, 'Player Stats');
 
-    // ââ BATTING ââ
+    // ── BATTING ──
     await clickSubTab(page, 'Batting');
     const batTables = await scrapeTables(page);
     // bat0: #,Name,GP,Avg,PA,AB,R,H,RBI,2B,3B,HR,GS
@@ -106,13 +106,13 @@ async function scrapeTeam(page, team) {
     const bat0 = batTables[0] || { headers:[], rows:[] };
     const bat1 = batTables[1] || { headers:[], rows:[] };
 
-    // ââ BASERUNNING ââ
+    // ── BASERUNNING ──
     await clickSubTab(page, 'Baserunning');
     const brTables = await scrapeTables(page);
     // br0: #,Name,GP,SB,SBA
     const br0 = brTables[0] || { headers:[], rows:[] };
 
-    // ââ PITCHING ââ
+    // ── PITCHING ──
     await clickSubTab(page, 'Pitching');
     const pitTables = await scrapeTables(page);
     // pit0: #,Name,ERA,W,L,W%,APP,GS,CG,SO,SV,NH,PG
@@ -122,7 +122,7 @@ async function scrapeTeam(page, team) {
     const pit1 = pitTables[1] || { headers:[], rows:[] };
     const pit2 = pitTables[2] || { headers:[], rows:[] };
 
-    // ââ Helper: make col-keyed object from table row ââ
+    // ── Helper: make col-keyed object from table row ──
     function rowObj(table, rowIdx) {
       const { headers, rows } = table;
       const row = rows[rowIdx];
@@ -132,7 +132,7 @@ async function scrapeTeam(page, team) {
       return obj;
     }
 
-    // ââ Build HITTERS ââ
+    // ── Build HITTERS ──
     const hitters = [];
     bat0.rows.forEach((_, i) => {
       const b0 = rowObj(bat0, i);
@@ -175,7 +175,7 @@ async function scrapeTeam(page, team) {
       });
     });
 
-    // ââ Build PITCHERS ââ
+    // ── Build PITCHERS ──
     const pitchers = [];
     pit0.rows.forEach((_, i) => {
       const p0 = rowObj(pit0, i);
@@ -202,19 +202,19 @@ async function scrapeTeam(page, team) {
       });
     });
 
-    console.log(`  â ${hitters.length} hitters, ${pitchers.length} pitchers`);
+    console.log(`  ✓ ${hitters.length} hitters, ${pitchers.length} pitchers`);
     return { hitters, pitchers };
 
   } catch (err) {
-    console.error(`  â ERROR: ${err.message}`);
+    console.error(`  ✗ ERROR: ${err.message}`);
     return { hitters: [], pitchers: [] };
   }
 }
 
-// âââ FORMAT OUTPUT ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── FORMAT OUTPUT ────────────────────────────────────────────────────────────
 function fmtHitter(p) {
   const n = JSON.stringify(p.name);
-  return `   {name:${n}, team:'${p.team}', league:'${p.league}', pa:${p.pa}, ab:${p.ab}, h:${p.h}, d:${p.d}, t:${p.t}, hr:${p.hr}, r:${p.r}, rbi:${p.rbi}, bb:${p.bb}, hbp:${p.hbp}, sf:${p.sf}, k:${p.k, sb:${p.sb}, cs:${p.cs}}`;
+  return `   {name:${n}, team:'${p.team}', league:'${p.league}', pa:${p.pa}, ab:${p.ab}, h:${p.h}, d:${p.d}, t:${p.t}, hr:${p.hr}, r:${p.r}, rbi:${p.rbi}, bb:${p.bb}, hbp:${p.hbp}, sf:${p.sf}, k:${p.k}, sb:${p.sb}, cs:${p.cs}}`;
 }
 
 function fmtPitcher(p) {
@@ -222,7 +222,8 @@ function fmtPitcher(p) {
   return `   {name:${n}, team:'${p.team}', league:'${p.league}', w:${p.v}, l:${p.l}, ip:${p.ip.toFixed(4)}, bf:${p.bf}, er:${p.er}, k:${p.k}, h:${p.h}, bb:${p.bb}, hr:${p.hr}, hbp:${p.hbp}}`;
 }
 
-// âââ INJECT INTO HTML âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── INJECT INTO HTML ─────────────────────────────────────────────────────────
+
 function injectIntoHTML(allHitters, allPitchers, today) {
   const htmlPath = path.join(__dirname, '..', 'ccaa-baseball.html');
   if (!fs.existsSync(htmlPath)) {
@@ -252,23 +253,23 @@ function injectIntoHTML(allHitters, allPitchers, today) {
   html = html.replace(pitchPattern, `const RAW_PITCHERS = [\n${pitchStr}\n];`);
 
   // Update last-updated date in the stats notice
-  HTML = html.replace(
+  html = html.replace(
     /Stats auto-updated.*?(?=<\/span>|\.)/,
     `Stats auto-updated ${today}`
   );
 
   fs.writeFileSync(htmlPath, html, 'utf8');
-  console.log(`\nâ Wrote ccaa-baseball.html (${allHitters.length} hitters, ${allPitchers.length} pitchers)`);
+  console.log(`\n✓ Wrote ccaa-baseball.html (${allHitters.length} hitters, ${allPitchers.length} pitchers)`);
   return true;
 }
 
-// âââ MAIN âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── MAIN ─────────────────────────────────────────────────────────────────────
 async function main() {
   const today = new Date().toLocaleDateString('en-US', {
     timeZone: 'America/Los_Angeles',
     month: 'short', day: 'numeric', year: 'numeric'
   });
-  console.log(`\n=== CCAA Baseball Scraper â  ${today} ===\n`);
+  console.log(`\n=== CCAA Baseball Scraper — ${today} ===\n`);
 
   const browser = await chromium.launch({
     headless: true,
@@ -308,7 +309,7 @@ async function main() {
 
   // Only update HTML if we got reasonable data
   if (allHitters.length < 10) {
-    console.error('Too few hitters scraped â aborting HTML update to avoid data loss');
+    console.error('Too few hitters scraped — aborting HTML update to avoid data loss');
     process.exit(1);
   }
 
@@ -324,7 +325,7 @@ async function main() {
     hitters: allHitters,
     pitchers: allPitchers
   }, null, 2));
-  console.log(`â Backup saved to scraper/last-scrape.json`);
+  console.log(`✓ Backup saved to scraper/last-scrape.json`);
 }
 
 main().catch(err => {
