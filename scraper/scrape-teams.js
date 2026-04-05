@@ -7,33 +7,75 @@
  *   - Leaderboards only show top ~25 players per stat category.
  *   - Pitchers not on the ERA leaderboard get er=0, causing fake 0.00 ERAs (the Glover bug).
  *   - Team pages show EVERY player's complete stats: H, BB, K, ER, HR, HBP, etc.
+ *
+ * Print page URLs (faster, single-page, no tab-clicking) are used for 13 of 16 teams.
+ * 3 teams fall back to the tab-click approach on their regular stats page.
  */
 
 const { chromium } = require('playwright');
 const fs   = require('fs');
 const path = require('path');
 
+// ─── SEASON ID & PRINT URL BUILDER ──────────────────────────────────────────
+const SSID = '1278779e-84df-4e60-8d03-db0024535aa6';
+const pu   = id =>
+  `https://www.maxpreps.com/print/team_stats.aspx?admin=0&bygame=0&league=0&print=1&schoolid=${id}&ssid=${SSID}`;
+
 // ─── TEAM LIST ──────────────────────────────────────────────────────────────
 const TEAMS = [
   // Mountain Division
-  { id:'sj',   league:'mountain', url:'https://www.maxpreps.com/ca/santa-maria/st-joseph-knights/baseball/' },
-  { id:'ag',   league:'mountain', url:'https://www.maxpreps.com/ca/arroyo-grande/arroyo-grande-eagles/baseball/' },
-  { id:'rhs',  league:'mountain', url:'https://www.maxpreps.com/ca/santa-maria/righetti-warriors/baseball/' },
-  { id:'mb',   league:'mountain', url:'https://www.maxpreps.com/ca/morro-bay/morro-bay-pirates/baseball/' },
-  { id:'mp',   league:'mountain', url:'https://www.maxpreps.com/ca/san-luis-obispo/mission-college-prep-royals/baseball/' },
-  { id:'lom',  league:'mountain', url:'https://www.maxpreps.com/ca/lompoc/lompoc-braves/baseball/' },
+  { id:'sj',   league:'mountain',
+    homeUrl:  'https://www.maxpreps.com/ca/santa-maria/st-joseph-knights/baseball/',
+    printUrl: pu('d627010f-8cc6-4595-9671-4456885d7143') },
+  { id:'ag',   league:'mountain',
+    homeUrl:  'https://www.maxpreps.com/ca/arroyo-grande/arroyo-grande-eagles/baseball/',
+    printUrl: pu('59e38f88-dd08-4300-a8a6-680a6516ac0a') },
+  { id:'rhs',  league:'mountain',
+    homeUrl:  'https://www.maxpreps.com/ca/santa-maria/righetti-warriors/baseball/',
+    printUrl: pu('e6b0bf04-c252-41b4-b21a-bd3032b33b2c') },
+  { id:'mb',   league:'mountain',
+    homeUrl:  'https://www.maxpreps.com/ca/morro-bay/morro-bay-pirates/baseball/',
+    printUrl: pu('494bf68f-157f-4cfa-af68-a897b6b940b4') },
+  { id:'mp',   league:'mountain',
+    homeUrl:  'https://www.maxpreps.com/ca/san-luis-obispo/mission-college-prep-royals/baseball/',
+    printUrl: null },  // fallback to tab-click
+  { id:'lom',  league:'mountain',
+    homeUrl:  'https://www.maxpreps.com/ca/lompoc/lompoc-braves/baseball/',
+    printUrl: null },  // fallback to tab-click
+
   // Sunset Division
-  { id:'slo',  league:'sunset',   url:'https://www.maxpreps.com/ca/san-luis-obispo/san-luis-obispo-tigers/baseball/' },
-  { id:'paso', league:'sunset',   url:'https://www.maxpreps.com/ca/paso-robles/paso-robles-bearcats/baseball/' },
-  { id:'ata',  league:'sunset',   url:'https://www.maxpreps.com/ca/atascadero/atascadero-greyhounds/baseball/' },
-  { id:'temp', league:'sunset',   url:'https://www.maxpreps.com/ca/templeton/templeton-eagles/baseball/' },
-  { id:'cab',  league:'sunset',   url:'https://www.maxpreps.com/ca/lompoc/cabrillo-conquistadores/baseball/' },
+  { id:'slo',  league:'sunset',
+    homeUrl:  'https://www.maxpreps.com/ca/san-luis-obispo/san-luis-obispo-tigers/baseball/',
+    printUrl: pu('e3798ac4-f77c-4305-b7c1-ec498ea3adfc') },
+  { id:'paso', league:'sunset',
+    homeUrl:  'https://www.maxpreps.com/ca/paso-robles/paso-robles-bearcats/baseball/',
+    printUrl: pu('2d42cf4d-74e8-4d22-b8c7-19225ea48c66') },
+  { id:'ata',  league:'sunset',
+    homeUrl:  'https://www.maxpreps.com/ca/atascadero/atascadero-greyhounds/baseball/',
+    printUrl: pu('9843fbe7-3edf-4251-af14-2ddccb35806d') },
+  { id:'temp', league:'sunset',
+    homeUrl:  'https://www.maxpreps.com/ca/templeton/templeton-eagles/baseball/',
+    printUrl: pu('1776def6-b0a7-4804-b98f-b7444a6e08ac') },
+  { id:'cab',  league:'sunset',
+    homeUrl:  'https://www.maxpreps.com/ca/lompoc/cabrillo-conquistadores/baseball/',
+    printUrl: pu('fe0bbe85-0ab5-4eca-b6e5-f8d2eac48157') },
+
   // Ocean Division
-  { id:'pv',   league:'ocean',    url:'https://www.maxpreps.com/ca/santa-maria/pioneer-valley-panthers/baseball/' },
-  { id:'nip',  league:'ocean',    url:'https://www.maxpreps.com/ca/nipomo/nipomo-titans/baseball/' },
-  { id:'sy',   league:'ocean',    url:'https://www.maxpreps.com/ca/santa-ynez/santa-ynez-pirates/baseball/' },
-  { id:'sm',   league:'ocean',    url:'https://www.maxpreps.com/ca/santa-maria/santa-maria-saints/baseball/' },
-  { id:'oa',   league:'ocean',    url:'https://www.maxpreps.com/ca/orcutt/orcutt-academy-spartans/baseball/' },
+  { id:'pv',   league:'ocean',
+    homeUrl:  'https://www.maxpreps.com/ca/santa-maria/pioneer-valley-panthers/baseball/',
+    printUrl: pu('af11ad42-5dd9-41e6-9d05-35a4707d5f45') },
+  { id:'nip',  league:'ocean',
+    homeUrl:  'https://www.maxpreps.com/ca/nipomo/nipomo-titans/baseball/',
+    printUrl: pu('8deefa29-1f29-448b-a77e-b9b7973cd529') },
+  { id:'sy',   league:'ocean',
+    homeUrl:  'https://www.maxpreps.com/ca/santa-ynez/santa-ynez-pirates/baseball/',
+    printUrl: pu('3b39e1dd-f577-417e-892a-2cbae905dfb2') },
+  { id:'sm',   league:'ocean',
+    homeUrl:  'https://www.maxpreps.com/ca/santa-maria/santa-maria-saints/baseball/',
+    printUrl: pu('5fff6cdf-6099-4cfb-9297-5734517e28ff') },
+  { id:'oa',   league:'ocean',
+    homeUrl:  'https://www.maxpreps.com/ca/orcutt/orcutt-academy-spartans/baseball/',
+    printUrl: null },  // fallback to tab-click
 ];
 
 // ─── HELPERS ────────────────────────────────────────────────────────────────
@@ -55,14 +97,154 @@ function parseIP(s) {
 
 const int = (s) => parseInt(s) || 0;
 
-// ─── PAGE SCRAPING HELPERS ───────────────────────────────────────────────────
+// Look up a value in a row-object by trying multiple possible column names
+function colVal(obj, ...keys) {
+  for (const k of keys) {
+    if (obj[k] !== undefined && obj[k] !== '') return obj[k];
+  }
+  return '';
+}
+
+// ─── PRINT PAGE SCRAPER ──────────────────────────────────────────────────────
+async function scrapeFromPrintPage(page, team) {
+  console.log(`[${team.id.toUpperCase()}] (print) ${team.printUrl}`);
+
+  try {
+    await page.goto(team.printUrl, { waitUntil: 'domcontentloaded', timeout: 45000 });
+    await page.waitForTimeout(2000);
+
+    // Extract all tables from the print page
+    const tables = await page.evaluate(() => {
+      return Array.from(document.querySelectorAll('table')).map(t => {
+        // Normalize header text: lowercase, strip non-alphanumeric
+        const headers = Array.from(t.querySelectorAll('th')).map(th =>
+          th.textContent.trim().toLowerCase().replace(/[^a-z0-9]/g, '')
+        );
+        const rows = Array.from(t.querySelectorAll('tr')).slice(1).map(tr =>
+          Array.from(tr.querySelectorAll('td')).map(td => td.textContent.trim())
+        ).filter(cells => cells.length > 1);
+        return { headers, rows };
+      });
+    });
+
+    // Identify tables by their column headers
+    let batTable  = null;
+    let pitTable  = null;
+    let brTable   = null;
+
+    for (const tbl of tables) {
+      const h = tbl.headers;
+      if (h.includes('pa') && h.includes('ab')) {
+        batTable = tbl;
+      } else if (h.includes('ip') && (h.includes('er') || h.includes('era'))) {
+        pitTable = tbl;
+      } else if (h.includes('sb') && h.includes('sba') && !h.includes('ip')) {
+        brTable = tbl;
+      }
+    }
+
+    // Helper: build row object from normalized headers
+    function makeRowObj(tbl, row) {
+      const obj = {};
+      tbl.headers.forEach((h, i) => { obj[h] = row[i] || ''; });
+      return obj;
+    }
+
+    // ── Build HITTERS ──
+    const hitters = [];
+    if (batTable) {
+      batTable.rows.forEach(row => {
+        const b = makeRowObj(batTable, row);
+        const name = b['name'] || b['player'] || colVal(b, 'name', 'player', 'playername');
+        if (!name) return;
+        const lc = name.toLowerCase();
+        if (lc.includes('total') || lc.includes('season')) return;
+
+        // Stolen bases — prefer baserunning table if available, else use batting table columns
+        let sb = 0, cs = 0;
+        if (brTable) {
+          const brRow = brTable.rows.find(r => {
+            const n = makeRowObj(brTable, r);
+            const rName = n['name'] || n['player'] || '';
+            return cleanName(rName).toLowerCase() === cleanName(name).toLowerCase();
+          });
+          if (brRow) {
+            const br = makeRowObj(brTable, brRow);
+            sb = int(colVal(br, 'sb'));
+            const sba = int(colVal(br, 'sba'));
+            cs = Math.max(0, sba - sb);
+          }
+        } else {
+          sb = int(colVal(b, 'sb'));
+          const sba = int(colVal(b, 'sba'));
+          cs = Math.max(0, sba - sb);
+        }
+
+        hitters.push({
+          name:   cleanName(name),
+          team:   team.id,
+          league: team.league,
+          pa:     int(colVal(b, 'pa')),
+          ab:     int(colVal(b, 'ab')),
+          h:      int(colVal(b, 'h', 'hits')),
+          d:      int(colVal(b, '2b', 'doubles')),
+          t:      int(colVal(b, '3b', 'triples')),
+          hr:     int(colVal(b, 'hr')),
+          r:      int(colVal(b, 'r', 'runs')),
+          rbi:    int(colVal(b, 'rbi')),
+          bb:     int(colVal(b, 'bb')),
+          hbp:    int(colVal(b, 'hbp')),
+          sf:     int(colVal(b, 'sf')),
+          k:      int(colVal(b, 'k', 'so', 'strikeouts')),
+          sb,
+          cs,
+        });
+      });
+    }
+
+    // ── Build PITCHERS ──
+    const pitchers = [];
+    if (pitTable) {
+      pitTable.rows.forEach(row => {
+        const p = makeRowObj(pitTable, row);
+        const name = p['name'] || p['player'] || colVal(p, 'name', 'player', 'playername');
+        if (!name) return;
+        const lc = name.toLowerCase();
+        if (lc.includes('total') || lc.includes('season')) return;
+
+        pitchers.push({
+          name:   cleanName(name),
+          team:   team.id,
+          league: team.league,
+          w:      int(colVal(p, 'w', 'wins')),
+          l:      int(colVal(p, 'l', 'losses')),
+          ip:     parseIP(colVal(p, 'ip')),
+          bf:     int(colVal(p, 'bf')),
+          er:     int(colVal(p, 'er')),
+          k:      int(colVal(p, 'k', 'so', 'strikeouts')),
+          h:      int(colVal(p, 'h', 'hits')),
+          bb:     int(colVal(p, 'bb')),
+          hr:     int(colVal(p, 'hr')),
+          hbp:    int(colVal(p, 'hbp')),
+        });
+      });
+    }
+
+    console.log(`  ✓ ${hitters.length} hitters, ${pitchers.length} pitchers`);
+    return { hitters, pitchers };
+
+  } catch (err) {
+    console.error(`  ✗ ERROR (print page): ${err.message}`);
+    return { hitters: [], pitchers: [] };
+  }
+}
+
+// ─── PAGE SCRAPING HELPERS (tab-click fallback) ──────────────────────────────
 async function clickSubTab(page, text) {
   try {
-    // Try button first
     const btn = await page.$(`button:has-text("${text}")`);
     if (btn) { await btn.click(); await page.waitForTimeout(700); return; }
   } catch {}
-  // Fall back to JS click
   await page.evaluate((t) => {
     const els = Array.from(document.querySelectorAll('button, [role="tab"], span, a'));
     const el = els.find(e => e.textContent.trim() === t);
@@ -78,51 +260,43 @@ async function scrapeTables(page) {
       const headers = Array.from(t.querySelectorAll('th')).map(th => th.textContent.trim());
       const rows = Array.from(t.querySelectorAll('tr')).slice(1).map(tr =>
         Array.from(tr.querySelectorAll('td')).map(td => td.textContent.trim())
-      ).filter(cells => cells.length > 0 && cells[1]); // skip empty & totals rows
+      ).filter(cells => cells.length > 0 && cells[1]);
       return { headers, rows };
     });
   });
 }
 
-// ─── SCRAPE ONE TEAM ─────────────────────────────────────────────────────────
-async function scrapeTeam(page, team) {
-  console.log(`\n[${team.id.toUpperCase()}] ${team.url}stats/`);
+// ─── TAB-CLICK FALLBACK SCRAPER ──────────────────────────────────────────────
+async function scrapeFromTeamPage(page, team) {
+  console.log(`[${team.id.toUpperCase()}] (tabs) ${team.homeUrl}stats/`);
 
   try {
-    await page.goto(team.url + 'stats/', {
+    await page.goto(team.homeUrl + 'stats/', {
       waitUntil: 'domcontentloaded',
       timeout: 45000
     });
     await page.waitForTimeout(2500);
 
-    // ── Click into Player Stats view ──
     await clickSubTab(page, 'Player Stats');
 
     // ── BATTING ──
     await clickSubTab(page, 'Batting');
     const batTables = await scrapeTables(page);
-    // bat0: #,Name,GP,Avg,PA,AB,R,H,RBI,2B,3B,HR,GS
-    // bat1: #,Name,GP,SF,SH/B,BB,K,HBP,ROE,FC,LOB,OBP,SLG,OPS
     const bat0 = batTables[0] || { headers:[], rows:[] };
     const bat1 = batTables[1] || { headers:[], rows:[] };
 
     // ── BASERUNNING ──
     await clickSubTab(page, 'Baserunning');
     const brTables = await scrapeTables(page);
-    // br0: #,Name,GP,SB,SBA
     const br0 = brTables[0] || { headers:[], rows:[] };
 
     // ── PITCHING ──
     await clickSubTab(page, 'Pitching');
     const pitTables = await scrapeTables(page);
-    // pit0: #,Name,ERA,W,L,W%,APP,GS,CG,SO,SV,NH,PG
-    // pit1: #,Name,IP,H,R,ER,BB,K,2B,3B,HR,BF,AB
-    // pit2: #,Name,OBA,OBP,WP,HBP,SF,SH/B,#P,BK,PO,SB
     const pit0 = pitTables[0] || { headers:[], rows:[] };
     const pit1 = pitTables[1] || { headers:[], rows:[] };
     const pit2 = pitTables[2] || { headers:[], rows:[] };
 
-    // ── Helper: make col-keyed object from table row ──
     function rowObj(table, rowIdx) {
       const { headers, rows } = table;
       const row = rows[rowIdx];
@@ -140,10 +314,7 @@ async function scrapeTeam(page, team) {
       if (!name || name === 'Season Totals') return;
 
       const b1 = rowObj(bat1, i);
-      const brRow = br0.rows.find((r, j) => {
-        const n = rowObj(br0, j)['Name'];
-        return n === name;
-      });
+      const brRow = br0.rows.find((r, j) => rowObj(br0, j)['Name'] === name);
       const brObj = brRow ? (() => {
         const obj = {};
         br0.headers.forEach((h, i) => { obj[h] = brRow[i] || ''; });
@@ -211,19 +382,27 @@ async function scrapeTeam(page, team) {
   }
 }
 
+// ─── SCRAPE ONE TEAM (routes to print page or tab-click fallback) ─────────────
+async function scrapeTeam(page, team) {
+  if (team.printUrl) {
+    return scrapeFromPrintPage(page, team);
+  } else {
+    return scrapeFromTeamPage(page, team);
+  }
+}
+
 // ─── FORMAT OUTPUT ────────────────────────────────────────────────────────────
 function fmtHitter(p) {
   const n = JSON.stringify(p.name);
-  return `   {name:${n}, team:'${p.team}', league:'${p.league}', pa:${p.pa}, ab:${p.ab}, h:${p.h}, d:${p.d}, t:${p.t}, hr:${p.hr}, r:${p.r}, rbi:${p.rbi}, bb:${p.bb}, hbp:${p.hbp}, sf:${p.sf}, k:${p.k}, sb:${p.sb}, cs:${p.cs}}`;
+  return `  {name:${n}, team:'${p.team}', league:'${p.league}', pa:${p.pa}, ab:${p.ab}, h:${p.h}, d:${p.d}, t:${p.t}, hr:${p.hr}, r:${p.r}, rbi:${p.rbi}, bb:${p.bb}, hbp:${p.hbp}, sf:${p.sf}, k:${p.k}, sb:${p.sb}, cs:${p.cs}}`;
 }
 
 function fmtPitcher(p) {
   const n = JSON.stringify(p.name);
-  return `   {name:${n}, team:'${p.team}', league:'${p.league}', w:${p.v}, l:${p.l}, ip:${p.ip.toFixed(4)}, bf:${p.bf}, er:${p.er}, k:${p.k}, h:${p.h}, bb:${p.bb}, hr:${p.hr}, hbp:${p.hbp}}`;
+  return `  {name:${n}, team:'${p.team}', league:'${p.league}', w:${p.w}, l:${p.l}, ip:${p.ip.toFixed(4)}, bf:${p.bf}, er:${p.er}, k:${p.k}, h:${p.h}, bb:${p.bb}, hr:${p.hr}, hbp:${p.hbp}}`;
 }
 
 // ─── INJECT INTO HTML ─────────────────────────────────────────────────────────
-
 function injectIntoHTML(allHitters, allPitchers, today) {
   const htmlPath = path.join(__dirname, '..', 'ccaa-baseball.html');
   if (!fs.existsSync(htmlPath)) {
@@ -282,7 +461,6 @@ async function main() {
   });
 
   const page = await context.newPage();
-  // Suppress console noise from MaxPreps
   page.on('console', () => {});
 
   const allHitters  = [];
@@ -296,8 +474,7 @@ async function main() {
     }
     allHitters.push(...hitters);
     allPitchers.push(...pitchers);
-    // Small delay between teams
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(1000);
   }
 
   await browser.close();
@@ -307,7 +484,6 @@ async function main() {
   console.log(`Total pitchers: ${allPitchers.length}`);
   if (errors.length) console.warn(`Teams with errors: ${errors.join(', ')}`);
 
-  // Only update HTML if we got reasonable data
   if (allHitters.length < 10) {
     console.error('Too few hitters scraped — aborting HTML update to avoid data loss');
     process.exit(1);
@@ -316,7 +492,6 @@ async function main() {
   const ok = injectIntoHTML(allHitters, allPitchers, today);
   if (!ok) process.exit(1);
 
-  // Save JSON backup for debugging
   const backupPath = path.join(__dirname, 'last-scrape.json');
   fs.writeFileSync(backupPath, JSON.stringify({
     date: today,
