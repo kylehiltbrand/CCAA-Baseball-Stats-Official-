@@ -16,12 +16,12 @@ const { chromium } = require('playwright');
 const fs   = require('fs');
 const path = require('path');
 
-// ─── SEASON ID & PRINT URL BUILDER ──────────────────────────────────────────
+// âââ SEASON ID & PRINT URL BUILDER ââââââââââââââââââââââââââââââââââââââââââ
 const SSID = '1278779e-84df-4e60-8d03-db0024535aa6';
 const pu   = id =>
   `https://www.maxpreps.com/print/team_stats.aspx?admin=0&bygame=0&league=0&print=1&schoolid=${id}&ssid=${SSID}`;
 
-// ─── TEAM LIST ──────────────────────────────────────────────────────────────
+// âââ TEAM LIST ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const TEAMS = [
   // Mountain Division
   { id:'sj',   league:'mountain',
@@ -36,7 +36,7 @@ const TEAMS = [
   { id:'mb',   league:'mountain',
     homeUrl:  'https://www.maxpreps.com/ca/morro-bay/morro-bay-pirates/baseball/',
     printUrl: pu('494bf68f-157f-4cfa-af68-a897b6b940b4') },
-  // mp and lom don't have player stats on MaxPreps — appear in standings only
+  // mp and lom don't have player stats on MaxPreps â appear in standings only
 
   // Sunset Division
   { id:'slo',  league:'sunset',
@@ -68,30 +68,30 @@ const TEAMS = [
   { id:'sm',   league:'ocean',
     homeUrl:  'https://www.maxpreps.com/ca/santa-maria/santa-maria-saints/baseball/',
     printUrl: pu('5fff6cdf-6099-4cfb-9297-5734517e28ff') },
-  // oa doesn't have player stats on MaxPreps — appears in standings only
+  // oa doesn't have player stats on MaxPreps â appears in standings only
 ];
 
-// ─── STANDINGS LEAGUE URLS (live from MaxPreps conference pages) ─────────────
+// âââ STANDINGS LEAGUE URLS (live from MaxPreps conference pages) âââââââââââââ
 const STANDINGS_LEAGUES = [
-  { id:'mountain', name:'Mountain League', sub:'CCAA — Mountain', colorClass:'mountain',
+  { id:'mountain', name:'Mountain League', sub:'CCAA â Mountain', colorClass:'mountain',
     url:   'https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--mountain/?leagueid=997fc154-7b9c-4f2c-b22f-242464a7c81c',
     mpUrl: 'https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--mountain/?leagueid=997fc154-7b9c-4f2c-b22f-242464a7c81c' },
-  { id:'sunset',   name:'Sunset League',   sub:'CCAA — Sunset',   colorClass:'sunset',
+  { id:'sunset',   name:'Sunset League',   sub:'CCAA â Sunset',   colorClass:'sunset',
     url:   'https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--sunset/?leagueid=fb2b85ea-c8d0-4acf-873c-3296a5780eff',
     mpUrl: 'https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--sunset/?leagueid=fb2b85ea-c8d0-4acf-873c-3296a5780eff' },
-  { id:'ocean',    name:'Ocean League',    sub:'CCAA — Ocean',    colorClass:'ocean',
+  { id:'ocean',    name:'Ocean League',    sub:'CCAA â Ocean',    colorClass:'ocean',
     url:   'https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--ocean/?leagueid=692cdcda-f9c9-46d2-a584-e075f5b97c75',
     mpUrl: 'https://www.maxpreps.com/ca/baseball/25-26/league/ccaa--ocean/?leagueid=692cdcda-f9c9-46d2-a584-e075f5b97c75' }
 ];
 
-// ─── HELPERS ────────────────────────────────────────────────────────────────
+// âââ HELPERS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function cleanName(raw) {
-  // "A. Bluem(Jr)" → "A. Bluem"
+  // "A. Bluem(Jr)" â "A. Bluem"
   return (raw || '').replace(/\s*\((Fr|So|Jr|Sr|8th|9th|10th|11th|12th)\)/gi, '').trim();
 }
 
 function parseIP(s) {
-  // Convert baseball IP notation to decimal: "21.1" → 21.333, "21.2" → 21.667
+  // Convert baseball IP notation to decimal: "21.1" â 21.333, "21.2" â 21.667
   if (!s) return 0;
   const str = s.toString().trim();
   if (!str || str === '0') return 0;
@@ -111,7 +111,7 @@ function colVal(obj, ...keys) {
   return '';
 }
 
-// ─── STANDINGS SCRAPER (live from MaxPreps conference pages only) ────────────
+// âââ STANDINGS SCRAPER (live from MaxPreps conference pages only) ââââââââââââ
 async function scrapeStandings(page) {
   const result = {};
   console.log('\n=== Scraping standings from MaxPreps conference pages ===');
@@ -161,9 +161,9 @@ async function scrapeStandings(page) {
       }
 
       result[lg.id] = teams;
-      console.log(`  ✓ ${lg.name}: ${teams.length} teams`);
+      console.log(`  â ${lg.name}: ${teams.length} teams`);
     } catch (err) {
-      console.error(`  ✗ ${lg.name} standings error: ${err.message}`);
+      console.error(`  â ${lg.name} standings error: ${err.message}`);
       result[lg.id] = [];
     }
   }
@@ -171,7 +171,7 @@ async function scrapeStandings(page) {
   return result;
 }
 
-// ─── GENERATE STANDINGS HTML BLOCK ──────────────────────────────────────────
+// âââ GENERATE STANDINGS HTML BLOCK ââââââââââââââââââââââââââââââââââââââââââ
 function generateStandingsHTML(standings) {
   const blocks = STANDINGS_LEAGUES.map(lg => {
     const teams = standings[lg.id] || [];
@@ -179,7 +179,7 @@ function generateStandingsHTML(standings) {
     const rows = teams.map((t, i) => {
       const rankClass = i === 0 ? 'rank first' : 'rank';
       const gbStr = t.gb === 0
-        ? '—'
+        ? 'â'
         : (t.gb % 1 === 0 ? String(t.gb) : t.gb.toFixed(1));
       const streakType = t.streak.charAt(0);
       const streakNum  = t.streak.slice(1);
@@ -197,7 +197,7 @@ function generateStandingsHTML(standings) {
       <div class="league-block-header">
         <div class="league-color-bar ${lg.colorClass}"></div>
         <div><div class="league-block-name">${lg.name}</div><div class="league-block-sub">${lg.sub}</div></div>
-        <a class="league-mp-link" href="${lg.mpUrl}" target="_blank">MaxPreps ↗</a>
+        <a class="league-mp-link" href="${lg.mpUrl}" target="_blank">MaxPreps â</a>
       </div>
       <table class="standings-tbl">
         <thead><tr><th>#</th><th style="text-align:left">Team</th><th>W</th><th>L</th><th>PCT</th><th>GB</th><th>Str</th><th>Overall</th></tr></thead>
@@ -208,7 +208,7 @@ ${rows}
     </div>`;
   }).join('\n');
 
-  return `<!-- ══════════ STANDINGS ══════════ -->
+  return `<!-- ââââââââââ STANDINGS ââââââââââ -->
 <div id="standings" class="section">
   <div class="standings-grid">
 ${blocks}
@@ -218,7 +218,191 @@ ${blocks}
 `;
 }
 
-// ─── PRINT PAGE SCRAPER ──────────────────────────────────────────────────────
+// âââ SCHEDULE SCRAPER (live from MaxPreps conference schedule pages) âââââââââ
+async function scrapeSchedule(page) {
+  // Map MaxPreps team names â internal IDs
+  const NAME_TO_ID = {
+    'st. joseph': 'sj',         'st joseph': 'sj',       'st. joseph knights': 'sj',
+    'arroyo grande': 'ag',      'arroyo grande eagles': 'ag',
+    'righetti': 'rhs',          'righetti warriors': 'rhs',
+    'mission college prep': 'mp','mission prep': 'mp',   'mission college prep royals': 'mp',
+    'lompoc': 'lom',            'lompoc braves': 'lom',
+    'cabrillo': 'cab',          'cabrillo conquistadores': 'cab',
+    'san luis obispo': 'slo',   'san luis obispo tigers': 'slo',
+    'templeton': 'temp',        'templeton eagles': 'temp',
+    'atascadero': 'ata',        'atascadero greyhounds': 'ata',
+    'paso robles': 'paso',      'paso robles bearcats': 'paso',
+    'morro bay': 'mb',          'morro bay pirates': 'mb',
+    'nipomo': 'nip',            'nipomo titans': 'nip',
+    'pioneer valley': 'pv',     'pioneer valley panthers': 'pv',
+    'santa ynez': 'sy',         'santa ynez pirates': 'sy',
+    'santa maria': 'sm',        'santa maria saints': 'sm',
+    'orcutt academy': 'oa',     'orcutt academy spartans': 'oa',
+  };
+
+  function resolveTeamId(name) {
+    if (!name) return null;
+    const lc = name.toLowerCase().replace(/\s+/g, ' ').trim();
+    if (NAME_TO_ID[lc]) return NAME_TO_ID[lc];
+    for (const [key, id] of Object.entries(NAME_TO_ID)) {
+      if (lc.includes(key) || key.includes(lc)) return id;
+    }
+    return null;
+  }
+
+  function dateToKey(dateStr) {
+    if (!dateStr) return null;
+    const MONTHS = {
+      january:'jan', february:'feb', march:'mar', april:'apr', may:'may', june:'jun',
+      july:'jul', august:'aug', september:'sep', october:'oct', november:'nov', december:'dec',
+      jan:'jan', feb:'feb', mar:'mar', apr:'apr', jun:'jun',
+      jul:'jul', aug:'aug', sep:'sep', oct:'oct', nov:'nov', dec:'dec',
+    };
+    const MONTH_NUMS = ['','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+    const s = dateStr.toString().trim();
+    // "March 26, 2026" or "March 26" or "Mar 26" â "mar26"
+    const wordMatch = s.match(/([a-zA-Z]+)\s+(\d{1,2})/);
+    if (wordMatch) {
+      const m = MONTHS[wordMatch[1].toLowerCase()];
+      if (m) return `${m}${parseInt(wordMatch[2])}`;
+    }
+    // "3/26/2026" or "3/26"
+    const slashMatch = s.match(/^(\d{1,2})\/(\d{1,2})/);
+    if (slashMatch) {
+      const m = MONTH_NUMS[parseInt(slashMatch[1])];
+      if (m) return `${m}${parseInt(slashMatch[2])}`;
+    }
+    // ISO "2026-03-26"
+    const isoMatch = s.match(/\d{4}-(\d{2})-(\d{2})/);
+    if (isoMatch) {
+      const m = MONTH_NUMS[parseInt(isoMatch[1])];
+      if (m) return `${m}${parseInt(isoMatch[2])}`;
+    }
+    return null;
+  }
+
+  const gamesByDate = {};
+  const seenGames  = new Set();
+  console.log('\n=== Scraping schedule from MaxPreps conference pages ===');
+
+  for (const lg of STANDINGS_LEAGUES) {
+    // Build schedule URL from standings URL:
+    // .../ccaa--mountain/?leagueid=X  â  .../ccaa--mountain/schedule/?leagueid=X
+    const schedUrl = lg.url.replace('/?leagueid=', '/schedule/?leagueid=');
+    try {
+      console.log(`  [schedule] ${lg.name}: ${schedUrl}`);
+      await page.goto(schedUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      await page.waitForTimeout(3500);
+
+      // Try __NEXT_DATA__ (Next.js server-side data) first â most reliable
+      const rawGames = await page.evaluate(() => {
+        function findGames(obj, depth) {
+          if (depth > 10 || !obj || typeof obj !== 'object') return null;
+          if (Array.isArray(obj)) {
+            if (obj.length > 0 && obj[0] && typeof obj[0] === 'object') {
+              const f = obj[0];
+              // Looks like a game if it has a date + at least one team reference
+              const hasDate  = 'gameDate' in f || 'date' in f || 'startDate' in f || 'scheduledDate' in f || 'eventDate' in f;
+              const hasTeam  = 'homeTeam' in f || 'awayTeam' in f || 'homeTeamName' in f || 'awayTeamName' in f;
+              if (hasDate && hasTeam) return obj;
+            }
+            for (const item of obj) {
+              const r = findGames(item, depth + 1);
+              if (r) return r;
+            }
+          } else {
+            for (const key of ['games','schedule','scheduleGames','gameSchedules','leagueGames','events','contests','fixtures']) {
+              if (obj[key]) { const r = findGames(obj[key], depth + 1); if (r) return r; }
+            }
+            for (const val of Object.values(obj)) {
+              if (typeof val === 'object') {
+                const r = findGames(val, depth + 1);
+                if (r) return r;
+              }
+            }
+          }
+          return null;
+        }
+        try {
+          const el = document.querySelector('#__NEXT_DATA__');
+          if (!el) return null;
+          return findGames(JSON.parse(el.textContent), 0);
+        } catch(e) { return null; }
+      });
+
+      if (rawGames && rawGames.length > 0) {
+        console.log(`    â Found ${rawGames.length} games in __NEXT_DATA__`);
+        for (const g of rawGames) {
+          const dateStr = g.gameDate || g.date || g.startDate || g.scheduledDate || g.eventDate || '';
+          const homeName = (typeof g.homeTeam === 'string' ? g.homeTeam : g.homeTeam?.name) || g.homeTeamName || '';
+          const awayName = (typeof g.awayTeam === 'string' ? g.awayTeam : g.awayTeam?.name) || g.awayTeamName || '';
+          const homeScore = g.homeScore ?? g.homeTeamScore ?? g.homePoints ?? null;
+          const awayScore = g.awayScore ?? g.awayTeamScore ?? g.awayPoints ?? null;
+          const timeStr   = g.time || g.gameTime || g.startTime || g.scheduledTime || '';
+
+          const dateKey = dateToKey(dateStr);
+          const homeId  = resolveTeamId(homeName);
+          const awayId  = resolveTeamId(awayName);
+          if (!dateKey || !homeId || !awayId) continue;
+
+          const gameKey = `${dateKey}-${homeId}-${awayId}`;
+          if (seenGames.has(gameKey)) continue;
+          seenGames.add(gameKey);
+
+          const hScore = (homeScore !== null && homeScore !== '' && homeScore !== undefined) ? parseInt(homeScore) : null;
+          const aScore = (awayScore !== null && awayScore !== '' && awayScore !== undefined) ? parseInt(awayScore) : null;
+          const hasScore = hScore !== null && aScore !== null && !isNaN(hScore) && !isNaN(aScore);
+
+          const gameObj = { home: homeId, away: awayId, homeScore: hasScore ? hScore : null, awayScore: hasScore ? aScore : null };
+          if (!hasScore && timeStr) gameObj.time = timeStr;
+
+          if (!gamesByDate[dateKey]) gamesByDate[dateKey] = [];
+          gamesByDate[dateKey].push(gameObj);
+        }
+      } else {
+        console.log(`    â  No __NEXT_DATA__ games found for ${lg.name} schedule â skipping`);
+      }
+
+    } catch (err) {
+      console.error(`  â ${lg.name} schedule error: ${err.message}`);
+    }
+  }
+
+  const totalGames = Object.values(gamesByDate).reduce((s, a) => s + a.length, 0);
+  console.log(`  â Schedule total: ${totalGames} games across ${Object.keys(gamesByDate).length} dates`);
+  return totalGames >= 3 ? gamesByDate : null;
+}
+
+// âââ GENERATE SCHEDULE JS CONSTANTS âââââââââââââââââââââââââââââââââââââââââ
+function generateScheduleJS(gamesByDate) {
+  const MONTH_ORDER = {jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+  function keySort(key) {
+    const m = key.match(/^([a-z]+)(\d+)$/);
+    return m ? (MONTH_ORDER[m[1]] || 0) * 100 + parseInt(m[2]) : 0;
+  }
+  // Sort dates descending (newest first, matches current structure)
+  const sortedDates = Object.keys(gamesByDate).sort((a, b) => keySort(b) - keySort(a));
+
+  const dateLines = sortedDates.map(dateKey => {
+    const gameLines = gamesByDate[dateKey].map(g => {
+      let s = `{home:'${g.home}',away:'${g.away}',homeScore:${g.homeScore === null ? 'null' : g.homeScore},awayScore:${g.awayScore === null ? 'null' : g.awayScore}`;
+      if (g.time) s += `,time:'${g.time}'`;
+      s += '}';
+      return `    ${s}`;
+    });
+    return `  ${dateKey}:[\n${gameLines.join(',\n')},\n  ]`;
+  });
+
+  const gamesStr = `const GAMES_BY_DATE = {\n${dateLines.join(',\n')},\n};`;
+
+  // UPCOMING_DATES: any date with at least one game that has null scores
+  const upcoming = sortedDates.filter(d => gamesByDate[d].some(g => g.homeScore === null));
+  const upcomingStr = `const UPCOMING_DATES = [${upcoming.map(d => `'${d}'`).join(',')}];`;
+
+  return { gamesStr, upcomingStr };
+}
+
+// âââ PRINT PAGE SCRAPER ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function scrapeFromPrintPage(page, team) {
   console.log(`[${team.id.toUpperCase()}] (print) ${team.printUrl}`);
 
@@ -228,7 +412,7 @@ async function scrapeFromPrintPage(page, team) {
     try {
       await page.waitForSelector('table', { timeout: 10000 });
     } catch {
-      console.log(`  [${team.id.toUpperCase()}] No table found after 10s — falling back to tab-click`);
+      console.log(`  [${team.id.toUpperCase()}] No table found after 10s â falling back to tab-click`);
       return scrapeFromTeamPage(page, team);
     }
     await page.waitForTimeout(1000);
@@ -259,6 +443,7 @@ async function scrapeFromPrintPage(page, team) {
 
     // Identify tables by their column headers
     let batTable  = null;
+    let batTable2 = null;  // secondary batting table: bb, k, hbp, sf, etc.
     let pitTable  = null;
     let brTable   = null;
 
@@ -266,6 +451,8 @@ async function scrapeFromPrintPage(page, team) {
       const h = tbl.headers;
       if (h.includes('pa') && h.includes('ab')) {
         batTable = tbl;
+      } else if (h.includes('bb') && (h.includes('k') || h.includes('so') || h.includes('hbp')) && !h.includes('pa') && !h.includes('ip')) {
+        batTable2 = tbl;  // table with walks, strikeouts, HBP but no PA or IP
       } else if (h.includes('ip') && (h.includes('er') || h.includes('era'))) {
         pitTable = tbl;
       } else if (h.includes('sb') && h.includes('sba') && !h.includes('ip')) {
@@ -280,17 +467,19 @@ async function scrapeFromPrintPage(page, team) {
       return obj;
     }
 
-    // ── Build HITTERS ──
+    // ââ Build HITTERS ââ
     const hitters = [];
     if (batTable) {
-      batTable.rows.forEach(row => {
-        const b = makeRowObj(batTable, row);
+      batTable.rows.forEach((row, idx) => {
+        const b  = makeRowObj(batTable, row);
+        // batTable2 (secondary table) has bb, k, hbp, sf â match by row index
+        const b2 = batTable2 ? makeRowObj(batTable2, batTable2.rows[idx] || []) : {};
         const name = colVal(b, 'name', 'player', 'playername', 'athletename');
         if (!name) return;
         const lc = name.toLowerCase();
         if (lc.includes('total') || lc.includes('season')) return;
 
-        // Stolen bases — prefer baserunning table if available, else use batting table columns
+        // Stolen bases â prefer baserunning table if available, else use batting table columns
         let sb = 0, cs = 0;
         if (brTable) {
           const brRow = brTable.rows.find(r => {
@@ -322,17 +511,18 @@ async function scrapeFromPrintPage(page, team) {
           hr:     int(colVal(b, 'hr')),
           r:      int(colVal(b, 'r', 'runs')),
           rbi:    int(colVal(b, 'rbi')),
-          bb:     int(colVal(b, 'bb')),
-          hbp:    int(colVal(b, 'hbp')),
-          sf:     int(colVal(b, 'sf')),
-          k:      int(colVal(b, 'k', 'so', 'strikeouts')),
+          // bb, k, hbp, sf come from secondary table (batTable2) if available
+          bb:     int(colVal(b2, 'bb')  || colVal(b, 'bb')),
+          hbp:    int(colVal(b2, 'hbp') || colVal(b, 'hbp')),
+          sf:     int(colVal(b2, 'sf')  || colVal(b, 'sf')),
+          k:      int(colVal(b2, 'k', 'so') || colVal(b, 'k', 'so', 'strikeouts')),
           sb,
           cs,
         });
       });
     }
 
-    // ── Build PITCHERS ──
+    // ââ Build PITCHERS ââ
     const pitchers = [];
     if (pitTable) {
       pitTable.rows.forEach(row => {
@@ -362,20 +552,20 @@ async function scrapeFromPrintPage(page, team) {
 
     // If print page yielded nothing, fall back to tab-click approach
     if (hitters.length === 0 && pitchers.length === 0) {
-      console.log(`  [${team.id.toUpperCase()}] Print page yielded 0 results — falling back to tab-click`);
+      console.log(`  [${team.id.toUpperCase()}] Print page yielded 0 results â falling back to tab-click`);
       return scrapeFromTeamPage(page, team);
     }
 
-    console.log(`  ✓ ${hitters.length} hitters, ${pitchers.length} pitchers`);
+    console.log(`  â ${hitters.length} hitters, ${pitchers.length} pitchers`);
     return { hitters, pitchers };
 
   } catch (err) {
-    console.error(`  ✗ ERROR (print page): ${err.message} — falling back to tab-click`);
+    console.error(`  â ERROR (print page): ${err.message} â falling back to tab-click`);
     return scrapeFromTeamPage(page, team);
   }
 }
 
-// ─── PAGE SCRAPING HELPERS (tab-click fallback) ──────────────────────────────
+// âââ PAGE SCRAPING HELPERS (tab-click fallback) ââââââââââââââââââââââââââââââ
 async function clickSubTab(page, text) {
   try {
     const btn = await page.$(`button:has-text("${text}")`);
@@ -402,7 +592,7 @@ async function scrapeTables(page) {
   });
 }
 
-// ─── TAB-CLICK FALLBACK SCRAPER ──────────────────────────────────────────────
+// âââ TAB-CLICK FALLBACK SCRAPER ââââââââââââââââââââââââââââââââââââââââââââââ
 async function scrapeFromTeamPage(page, team) {
   console.log(`[${team.id.toUpperCase()}] (tabs) ${team.homeUrl}stats/`);
 
@@ -415,18 +605,18 @@ async function scrapeFromTeamPage(page, team) {
 
     await clickSubTab(page, 'Player Stats');
 
-    // ── BATTING ──
+    // ââ BATTING ââ
     await clickSubTab(page, 'Batting');
     const batTables = await scrapeTables(page);
     const bat0 = batTables[0] || { headers:[], rows:[] };
     const bat1 = batTables[1] || { headers:[], rows:[] };
 
-    // ── BASERUNNING ──
+    // ââ BASERUNNING ââ
     await clickSubTab(page, 'Baserunning');
     const brTables = await scrapeTables(page);
     const br0 = brTables[0] || { headers:[], rows:[] };
 
-    // ── PITCHING ──
+    // ââ PITCHING ââ
     await clickSubTab(page, 'Pitching');
     const pitTables = await scrapeTables(page);
     const pit0 = pitTables[0] || { headers:[], rows:[] };
@@ -442,7 +632,7 @@ async function scrapeFromTeamPage(page, team) {
       return obj;
     }
 
-    // ── Build HITTERS ──
+    // ââ Build HITTERS ââ
     const hitters = [];
     bat0.rows.forEach((_, i) => {
       const b0 = rowObj(bat0, i);
@@ -482,7 +672,7 @@ async function scrapeFromTeamPage(page, team) {
       });
     });
 
-    // ── Build PITCHERS ──
+    // ââ Build PITCHERS ââ
     const pitchers = [];
     pit0.rows.forEach((_, i) => {
       const p0 = rowObj(pit0, i);
@@ -509,16 +699,16 @@ async function scrapeFromTeamPage(page, team) {
       });
     });
 
-    console.log(`  ✓ ${hitters.length} hitters, ${pitchers.length} pitchers`);
+    console.log(`  â ${hitters.length} hitters, ${pitchers.length} pitchers`);
     return { hitters, pitchers };
 
   } catch (err) {
-    console.error(`  ✗ ERROR: ${err.message}`);
+    console.error(`  â ERROR: ${err.message}`);
     return { hitters: [], pitchers: [] };
   }
 }
 
-// ─── SCRAPE ONE TEAM (routes to print page or tab-click fallback) ─────────────
+// âââ SCRAPE ONE TEAM (routes to print page or tab-click fallback) âââââââââââââ
 async function scrapeTeam(page, team) {
   if (team.printUrl) {
     return scrapeFromPrintPage(page, team);
@@ -527,10 +717,10 @@ async function scrapeTeam(page, team) {
   }
 }
 
-// ─── FORMAT OUTPUT  b��────────────────────────────────────────────────────────────
+// âââ FORMAT OUTPUT ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function fmtHitter(p) {
   const n = JSON.stringify(p.name);
-  return `   {name:${n}, team:'${p.team}', league:'${p.league}', pa:${p.pa}, ab:${p.ab}, h:${p.h}, d:${p.d}, t:${p.t}, hr:${p.hr}, r:${p.r}, rbi:${p.rbi}, bb:${p.bb}, hbp:${p.hbp}, sf:${p.sf}, k:${p.k}, sb:${p.sb}, cs:${p.cs}}`;
+  return `   {name:${n}, team:'${p.team}', league:'${p.league}', pa:${p.pa}, ab:${p.ab}, h:${p.h}, d:${p.d}, t:${p.t}, hr:${p.hr}, r:${p.r}, rbi:${p.rbi}, bb:${p.bb}, hbp:${p.hbp}, sf:${p.sf}, k:${p.h}, sb:${p.sb}, cs:${p.cs}}`;
 }
 
 function fmtPitcher(p) {
@@ -538,8 +728,8 @@ function fmtPitcher(p) {
   return `   {name:${n}, team:'${p.team}', league:'${p.league}', w:${p.w}, l:${p.l}, ip:${p.ip.toFixed(4)}, bf:${p.bf}, er:${p.er}, k:${p.k}, h:${p.h}, bb:${p.bb}, hr:${p.hr}, hbp:${p.hbp}}`;
 }
 
-// ─── INJECT INTO HTML ─────────────────────────────────────────────────────────
-function injectIntoHTML(allHitters, allPitchers, standingsData, today) {
+// âââ INJECT INTO HTML âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+function injectIntoHTML(allHitters, allPitchers, standingsData, scheduleData, today) {
   const htmlPath = path.join(__dirname, '..', 'ccaa-baseball.html');
   if (!fs.existsSync(htmlPath)) {
     console.error('ccaa-baseball.html not found at:', htmlPath);
@@ -560,7 +750,7 @@ function injectIntoHTML(allHitters, allPitchers, standingsData, today) {
   html = html.replace(hitPattern, `const RAW_HITTERS = [\n${hitStr}\n];`);
 
   // Replace RAW_PITCHERS
-  const pitchPattern = /const RAW_PITCHERS\s*=\s*\[[\s\S]*?\];/;
+  const pitchPattern = /const RAW_PITCHERR\s*=\s*\[[\s\S]*?\];/;
   if (!pitchPattern.test(html)) {
     console.error('Could not find RAW_PITCHERS in HTML');
     return false;
@@ -579,27 +769,47 @@ function injectIntoHTML(allHitters, allPitchers, standingsData, today) {
 
   // Replace the entire standings section with fresh data scraped live from MaxPreps conference pages
   if (standingsData) {
-    const standingsPattern = /<!-- ══════════ STANDINGS ══════════ -->[\s\S]*?(?=<!-- ══════════ STATS)/;
+    const standingsPattern = /<!-- ââââââââââ STANDINGS ââââââââââ -->[\s\S]*?(?=<!-- ââââââââââ STATS)/;
     if (standingsPattern.test(html)) {
       html = html.replace(standingsPattern, generateStandingsHTML(standingsData));
-      console.log('✓ Standings updated from live MaxPreps conference pages');
+      console.log('â Standings updated from live MaxPreps conference pages');
     } else {
-      console.warn('Could not find STANDINGS section marker — skipping standings update');
+      console.warn('Could not find STANDINGS section marker â skipping standings update');
+    }
+  }
+
+  // Replace GAMES_BY_DATE and UPCOMING_DATES with live schedule data
+  if (scheduleData) {
+    const { gamesStr, upcomingStr } = generateScheduleJS(scheduleData);
+
+    const gamesPattern = /const GAMES_BY_DATE\s*=\s*\{[\s\S]*?\};/;
+    if (gamesPattern.test(html)) {
+      html = html.replace(gamesPattern, gamesStr);
+      const totalGames = Object.values(scheduleData).reduce((s, a) => s + a.length, 0);
+      console.log(`â GAMES_BY_DATE updated (${totalGames} games across ${Object.keys(scheduleData).length} dates)`);
+    } else {
+      console.warn('Could not find GAMES_BY_DATE in HTML â skipping schedule update');
+    }
+
+    const upcomingPattern = /const UPCOMING_DATES\s*=\s*\[[\s\S]*?\];/;
+    if (upcomingPattern.test(html)) {
+      html = html.replace(upcomingPattern, upcomingStr);
+      console.log('â UPCOMING_DATES updated');
     }
   }
 
   fs.writeFileSync(htmlPath, html, 'utf8');
-  console.log(`\n✓ Wrote ccaa-baseball.html (${allHitters.length} hitters, ${allPitchers.length} pitchers)`);
+  console.log(`\nâ Wrote ccaa-baseball.html (${allHitters.length} hitters, ${allPitchers.length} pitchers)`);
   return true;
 }
 
-// ─── MAIN ─────────────────────────────────────────────────────────────────────
+// âââ MAIN âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function main() {
   const today = new Date().toLocaleDateString('en-US', {
     timeZone: 'America/Los_Angeles',
     month: 'short', day: 'numeric', year: 'numeric'
   });
-  console.log(`\n=== CCAA Baseball Scraper — ${today} ===\n`);
+  console.log(`\n=== CCAA Baseball Scraper â ${today} ===\n`);
 
   const browser = await chromium.launch({
     headless: true,
@@ -631,6 +841,9 @@ async function main() {
   // Scrape standings live from MaxPreps conference pages (not from any cached files)
   const standingsData = await scrapeStandings(page);
 
+  // Scrape schedule / scores live from MaxPreps conference schedule pages
+  const scheduleData  = await scrapeSchedule(page);
+
   await browser.close();
 
   console.log(`\n=== RESULTS ===`);
@@ -639,11 +852,11 @@ async function main() {
   if (errors.length) console.warn(`Teams with errors: ${errors.join(', ')}`);
 
   if (allHitters.length < 10) {
-    console.error('Too few hitters scraped — aborting HTML update to avoid data loss');
+    console.error('Too few hitters scraped â aborting HTML update to avoid data loss');
     process.exit(1);
   }
 
-  const ok = injectIntoHTML(allHitters, allPitchers, standingsData, today);
+  const ok = injectIntoHTML(allHitters, allPitchers, standingsData, scheduleData, today);
   if (!ok) process.exit(1);
 
   const backupPath = path.join(__dirname, 'last-scrape.json');
@@ -654,7 +867,7 @@ async function main() {
     hitters: allHitters,
     pitchers: allPitchers
   }, null, 2));
-  console.log(`✓ Backup saved to scraper/last-scrape.json`);
+  console.log(`â Backup saved to scraper/last-scrape.json`);
 }
 
 main().catch(err => {
